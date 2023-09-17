@@ -1,6 +1,10 @@
 package users
 
-import "time"
+import (
+	divisionCore "hris-app-golang/feature/divisions"
+	roleCore "hris-app-golang/feature/roles"
+	"time"
+)
 
 type UserCore struct {
 	ID           string
@@ -11,13 +15,16 @@ type UserCore struct {
 	Password     string
 	Address      string
 	ProfilePhoto string
-	UserLeadID   string
+	UserLeadID   *string
 	RoleID       string
 	DivisionID   string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	UserLead     *UserCore
+	Role         roleCore.RoleCore
+	Division     divisionCore.DivisionCore
 	UserImport   UserImportantData
 	UserEdu      UserEducationData
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type UserImportantData struct {
