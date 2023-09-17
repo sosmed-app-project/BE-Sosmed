@@ -22,7 +22,7 @@ type UserCore struct {
 	Role         roleCore.RoleCore
 	Division     divisionCore.DivisionCore
 	UserImport   UserImportantData
-	UserEdu      UserEducationData
+	UserEdu      []UserEducationData
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
@@ -49,4 +49,12 @@ type UserEducationData struct {
 	GraduateYear string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+type UserDataInterface interface {
+	SelectById(id string) (UserCore, error)
+}
+
+type UserServiceInterface interface {
+	GetById(id string) (UserCore, error)
 }
