@@ -3,7 +3,6 @@ package database
 import (
 	"fmt"
 	"hris-app-golang/app/config"
-	companiesData "hris-app-golang/feature/companies/data"
 	divisionsData "hris-app-golang/feature/divisions/data"
 	rolesData "hris-app-golang/feature/roles/data"
 	usersData "hris-app-golang/feature/users/data"
@@ -24,5 +23,9 @@ func InitMysql(cfg *config.AppConfig) *gorm.DB {
 }
 
 func InittialMigration(db *gorm.DB) {
-	db.AutoMigrate(&usersData.User{}, &usersData.UserImportant{}, &usersData.UserEducation{}, &rolesData.Role{}, &divisionsData.Division{}, &companiesData.Company{})
+	db.AutoMigrate(&usersData.User{})
+	db.AutoMigrate(&usersData.UserImportant{})
+	db.AutoMigrate(&usersData.UserEducation{})
+	db.AutoMigrate(&rolesData.Role{})
+	db.AutoMigrate(&divisionsData.Division{})
 }
