@@ -6,6 +6,7 @@ import (
 	"hris-app-golang/app/router"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -14,11 +15,11 @@ func main() {
 	database.InittialMigration(mysql)
 
 	e := echo.New()
-	// e.Pre(middleware.RemoveTrailingSlash())
-	// e.Use(middleware.CORS())
-	// e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-	// Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
-	// }))
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.CORS())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
+	}))
 	router.InitRouter(mysql, e)
 	e.Logger.Fatal(e.Start(":8090"))
 }
