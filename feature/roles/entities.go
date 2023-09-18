@@ -3,7 +3,7 @@ package levels
 import "time"
 
 type RoleCore struct {
-	ID        string
+	ID        uint
 	Name      string
 	CreatedAt time.Time
 	UpdatedAt time.Time

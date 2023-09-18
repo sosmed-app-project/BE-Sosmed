@@ -1,0 +1,471 @@
+openapi: '3.0.2'
+info:
+  title: API HRIS-APP-Immersive
+  description: The documentation of endpoints for HRIS-APP team 2
+  version: 1.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/ilham9d27/1.0.2
+  - url: https://api.server.test/v1
+tags:
+  - name: Auth
+  - name: Users
+  - name: Roles
+  - name: Divisions
+
+paths:
+  /login:
+    post:
+      tags:
+        - Auth
+      summary: authentication
+      description: authentication using email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                "email":
+                  type: string
+                  example: tony@mail.com
+                "password":
+                  type: string
+                  example: qwerty
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "code":
+                    type: integer
+                    format: int64
+                    example: 200
+                  "message":
+                    type: string
+                    example: success
+                  "data":
+                    type: object
+                    example:
+                      role: Admin
+                      division: Human Resource
+                      token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTM4ODY3MzUsInVzZXJJZCI6Im9SNGJteDlSSHVqbmhjQXJRTGhxIn0.R2p7Vils0rZZbS-9gEbayncyxvUEATnav0i6vPRCIz0
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+            
+  /users:
+    post:
+      tags:
+        - Users
+      summary: add new user
+      description: this endpoint to add new user by sending all information require
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                "first_name":
+                  type: string
+                  example: tony
+                "last_name":
+                  type: string
+                  example: stark
+                "email":
+                  type: string
+                  example: tony@mail.com
+                "phone_number":
+                  type: string
+                  example: 90264
+                "address":
+                  type: string
+                  example: Malibu, California
+                "profile_photo":
+                  type: string
+                  example: myProfile.jpg
+                "user_lead_id":
+                  type: string
+                  example: qwRDbka785jaaIUH712u
+                "role_id":
+                  type: string
+                  example: kagiqUF674KJBKaguaI4
+                "division_id":
+                  type: string
+                  example: KUAISbkvashdu65kjsb8
+                "user_important_data":
+                  type: object
+                  properties:
+                    "birth_place":
+                      type: string
+                      example: Manhattan, New York
+                    "birth_day":
+                      type: string
+                      format: date
+                      example: 1970-05-29
+                    "emergency_name":
+                      type: string
+                      example: pepper potts
+                    "emergency_status":
+                      type: string
+                      example: wife
+                    "emergency_phone":
+                      type: string
+                      example: 098765
+                    "npwp":
+                      type: string
+                      example: KGJG7875765HJ
+                    "bpjs":
+                      type: string
+                      example: KAGK76657POIU
+                    "religion":
+                      type: string
+                      enum: 
+                        - Islam
+                        - Kristen
+                        - Katolik
+                        - Hindu
+                        - Budha
+                        - Konghucu
+                      example: Kristen
+                    "gender":
+                      type: string
+                      enum:
+                        - Male
+                        - Female
+                      example: Male
+                "user_education_data":
+                  type: array
+                  items:
+                    properties:
+                      "name":
+                        type: string
+                        example: "Electrical Engineering MIT"
+                      "start_year":
+                        type: string
+                        example: 1984
+                      "graduate_year":
+                        type: string
+                        example: 1987
+      responses:
+        "201":
+          $ref: "#/components/responses/responseCreated"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+
+    get:
+      tags:
+        - Users
+      summary: get all users
+      description: get all users data
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "code":
+                    type: integer
+                    format: int64
+                    example: 200
+                  "message":
+                    type: string
+                    example: operatin success
+                  "data":
+                    type: array
+                    items:
+                      properties:
+                        "id":
+                          type: string
+                          example: qwRDbka785jaaIUH712u
+                        "first_name":
+                          type: string
+                          example: tony
+                        "last_name":
+                          type: string
+                          example: stark
+                        "division":
+                          type: object
+                          properties:
+                            "id":
+                              type: string
+                              example: qwRDbka785jaaIUH712u
+                            "name":
+                              type: string
+                              example: Information Technology
+                        "role":
+                          type: object
+                          properties:
+                            "id":
+                              type: string
+                              example: qwRDbka785jaaIUH712u
+                            "name":
+                              type: string
+                              example: Employee
+        
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+
+  /users/{user_id}:
+    get:
+      tags:
+        - Users
+      summary: get specific user data
+      description: get specific user data using user id
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "first_name":
+                    type: string
+                    example: tony
+                  "last_name":
+                    type: string
+                    example: stark
+                  "email":
+                    type: string
+                    example: tony@mail.com
+                  "phone_number":
+                    type: string
+                    example: 90265
+                  "address":
+                    type: string
+                    example: Malibu, California
+                  "division":
+                    type: object
+                    properties:
+                      "id":
+                        type: string
+                        example: qwRDbka785jaaIUH712u
+                      "name":
+                        type: string
+                        example: Information Technology
+                  "role":
+                    type: object
+                    properties:
+                      "id":
+                        type: string
+                        example: qwRDbka785jaaIUH712u
+                      "name":
+                        type: string
+                        example: Employee
+                  "user_important_data":
+                    type: object
+                    properties:
+                      "birth_place":
+                        type: string
+                        example: Manhattan, New York
+                      "birth_date":
+                        type: string
+                        example: 1970-05-29
+                      "religion":
+                        type: string
+                        example: Kristen
+                      "gender":
+                        type: string
+                        example: Male
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+
+    put:
+      tags:
+        - Users
+      summary: add new user
+      description: this endpoint to add new user by sending all information require
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                "first_name":
+                  type: string
+                  example: tony
+                "last_name":
+                  type: string
+                  example: stark
+                "email":
+                  type: string
+                  example: tony@mail.com
+                "phone_number":
+                  type: string
+                  example: 90264
+                "address":
+                  type: string
+                  example: Malibu, California
+                "profile_photo":
+                  type: string
+                  example: myProfile.jpg
+                "user_lead_id":
+                  type: string
+                  example: qwRDbka785jaaIUH712u
+                "role_id":
+                  type: string
+                  example: kagiqUF674KJBKaguaI4
+                "division_id":
+                  type: string
+                  example: KUAISbkvashdu65kjsb8
+                "user_important_data":
+                  type: object
+                  properties:
+                    "birth_place":
+                      type: string
+                      example: Manhattan, New York
+                    "birth_day":
+                      type: string
+                      format: date
+                      example: 1970-05-29
+                    "emergency_name":
+                      type: string
+                      example: pepper potts
+                    "emergency_status":
+                      type: string
+                      example: wife
+                    "emergency_phone":
+                      type: string
+                      example: 098765
+                    "npwp":
+                      type: string
+                      example: KGJG7875765HJ
+                    "bpjs":
+                      type: string
+                      example: KAGK76657POIU
+                    "religion":
+                      type: string
+                      enum: 
+                        - Islam
+                        - Kristen
+                        - Katolik
+                        - Hindu
+                        - Budha
+                        - Konghucu
+                      example: Kristen
+                    "gender":
+                      type: string
+                      enum:
+                        - Male
+                        - Female
+                      example: Male
+                "user_education_data":
+                  type: array
+                  items:
+                    properties:
+                      "name":
+                        type: string
+                        example: "Electrical Engineering MIT"
+                      "start_year":
+                        type: string
+                        example: 1984
+                      "graduate_year":
+                        type: string
+                        example: 1987
+      responses:
+        "201":
+          $ref: "#/components/responses/responseCreated"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "500":
+          $ref: "#/components/responses/responseInternalError"               
+
+components:
+  responses:
+    #########################
+    ### general responses ###
+    #########################
+    responseCreated:
+      description: success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              "code":
+                type: integer
+                format: int64
+                example: 201
+              "message":
+                type: string
+                example: operation success, data added
+              "data":
+                type: object
+                example: null
+
+    responseBadRequest:
+      description: failed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              "code":
+                type: integer
+                format: int64
+                example: 400
+              "message":
+                type: string
+                example: operation failed, request resource not valid
+              "data":
+                type: object
+                example: null
+    
+    responseNotFound:
+      description: failed not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              "code": 
+                type: integer
+                format: int64
+                example: 404
+              "message":
+                type: string
+                example: operation failed, resource not found
+              "data":
+                type: object
+                example: null
+    
+    responseInternalError:
+      description: failed internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              "code":
+                type: integer
+                format: int64
+                example: 500
+              "message":
+                type: string
+                example: operatin failed, internal server error
+              "data":
+                type: object
+                example: null

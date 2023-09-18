@@ -7,7 +7,7 @@ import (
 )
 
 type UserCore struct {
-	ID           string
+	ID           uint
 	FirstName    string
 	LastName     string
 	Email        string
@@ -15,20 +15,21 @@ type UserCore struct {
 	Password     string
 	Address      string
 	ProfilePhoto string
-	UserLeadID   *string
-	RoleID       string
-	DivisionID   string
+	UserLeadID   *uint
+	RoleID       uint
+	DivisionID   uint
 	UserLead     *UserCore
 	Role         roleCore.RoleCore
 	Division     divisionCore.DivisionCore
 	UserImport   UserImportantData
-	UserEdu      UserEducationData
+	UserEdu      []UserEducationData
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 }
 
 type UserImportantData struct {
-	UserID          string
+	ID              uint
+	UserID          uint
 	BirthPlace      string
 	BirthDate       time.Time
 	EmergencyName   string
@@ -43,10 +44,29 @@ type UserImportantData struct {
 }
 
 type UserEducationData struct {
-	UserID       string
+	ID           uint
+	UserID       uint
 	Name         string
 	StartYear    string
 	GraduateYear string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+}
+
+type UserDataInterface interface {
+	Insert(input UserCore) error
+	SelectAll(role_id, division_id string) ([]UserCore, error)
+	SelectById(id string) (UserCore, error)
+	Update(id string, input UserCore) error
+	Delete(id string) error
+	Login(email, password string) (UserCore, error)
+}
+
+type UserServiceInterface interface {
+	Add(input UserCore) error
+	GetAll(role_id, division_id string) ([]UserCore, error)
+	GetById(id string) (UserCore, error)
+	Update(id string, input UserCore) error
+	Delete(id string) error
+	Login(email, password string) (UserCore, string, error)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Division struct {
-	ID        string         `gorm:"column:id;type:varchar(30);primaryKey"`
+	ID        uint           `gorm:"column:id;primaryKey"`
 	Name      string         `gorm:"column:name;not null"`
 	CreatedAt time.Time      `gorm:"column:created_at"`
 	UpdatedAt time.Time      `gorm:"column:updated_at"`
