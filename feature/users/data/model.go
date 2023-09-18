@@ -12,7 +12,7 @@ import (
 )
 
 type User struct {
-	ID           string                 `gorm:"column:id;type:varchar(30);primaryKey"`
+	ID           uint                   `gorm:"column:id;primaryKey"`
 	FirstName    string                 `gorm:"column:first_name;not null"`
 	LastName     string                 `gorm:"column:last_name;not null"`
 	Email        string                 `gorm:"column:email;not null;unique"`
@@ -20,9 +20,9 @@ type User struct {
 	Password     string                 `gorm:"column:password;not null;default:'qwerty'"`
 	Address      string                 `gorm:"column:address"`
 	ProfilePhoto string                 `gorm:"column:profile_photo"`
-	UserLeadID   *string                `gorm:"column:user_lead_id;type:varchar(30)"`
-	RoleID       string                 `gorm:"column:role_id;type:varchar(30)"`
-	DivisionID   string                 `gorm:"column:division_id;type:varchar(30)"`
+	UserLeadID   *uint                  `gorm:"column:user_lead_id"`
+	RoleID       uint                   `gorm:"column:role_id"`
+	DivisionID   uint                   `gorm:"column:division_id"`
 	UserLead     *User                  `gorm:"foreignKey:UserLeadID"`
 	Role         roleModel.Role         `gorm:"foreignKey:RoleID"`
 	Division     divisionModel.Division `gorm:"foreignKey:DivisionID"`
@@ -34,8 +34,8 @@ type User struct {
 }
 
 type UserImportant struct {
-	ID              string         `gorm:"column:id;type:varchar(30);primaryKey"`
-	UserID          string         `gorm:"column:user_id;type:varchar(30)"`
+	ID              uint           `gorm:"column:id;primaryKey"`
+	UserID          uint           `gorm:"column:user_id"`
 	BirthPlace      string         `gorm:"column:birth_place"`
 	BirthDate       time.Time      `gorm:"column:birth_date"`
 	EmergencyName   string         `gorm:"column:emergency_name"`
@@ -51,8 +51,8 @@ type UserImportant struct {
 }
 
 type UserEducation struct {
-	ID           string         `gorm:"type:varchar(30);primaryKey"`
-	UserID       string         `gorm:"column:user_id;type:varchar(30)"`
+	ID           uint           `gorm:"primaryKey"`
+	UserID       uint           `gorm:"column:user_id"`
 	Name         string         `gorm:"column:name"`
 	StartYear    string         `gorm:"column:start_year"`
 	GraduateYear string         `gorm:"column:graduate_year"`
@@ -61,83 +61,145 @@ type UserEducation struct {
 	DeletedAt    gorm.DeletedAt `gorm:"column:deleted_at;index"`
 }
 
-func ModelToCore(modelUser User) users.UserCore {
-	coreUser := users.UserCore{
-		ID:           modelUser.ID,
-		FirstName:    modelUser.FirstName,
-		LastName:     modelUser.LastName,
-		Email:        modelUser.Email,
-		PhoneNumber:  modelUser.PhoneNumber,
-		Password:     modelUser.Password,
-		Address:      modelUser.Address,
-		ProfilePhoto: modelUser.ProfilePhoto,
-		UserLeadID:   modelUser.UserLeadID,
-		RoleID:       modelUser.RoleID,
-		DivisionID:   modelUser.DivisionID,
-		//UserLead:     &users.UserCore{},
-		Role:       RoleModelToCore(modelUser.Role),
-		Division:   DivisionModelToCore(modelUser.Division),
-		UserImport: UserImportModelToCore(modelUser.UserImport),
-		UserEdu:    UserEduModelCore(modelUser.UserEdu),
-		CreatedAt:  modelUser.CreatedAt,
-		UpdatedAt:  modelUser.UpdatedAt,
+func UserCoreToModel(input users.UserCore) User {
+	var userModel = User{
+		FirstName:    input.FirstName,
+		LastName:     input.LastName,
+		Email:        input.Email,
+		PhoneNumber:  input.PhoneNumber,
+		Password:     input.Password,
+		Address:      input.Address,
+		ProfilePhoto: input.ProfilePhoto,
+		UserLeadID:   input.UserLeadID,
+		RoleID:       input.RoleID,
+		DivisionID:   input.DivisionID,
+		UserImport:   UserImportantCoreToModel(input.UserImport),
+		UserEdu:      UserEducationCoreToModel(input.UserEdu),
 	}
-
-	return coreUser
+	return userModel
 }
 
-func RoleModelToCore(RoleModel roleModel.Role) roleCore.RoleCore {
-	role := roleCore.RoleCore{
-		ID:        RoleModel.ID,
-		Name:      RoleModel.Name,
-		CreatedAt: RoleModel.CreatedAt,
-		UpdatedAt: RoleModel.UpdatedAt,
+func UserImportantCoreToModel(input users.UserImportantData) UserImportant {
+	var userImport = UserImportant{
+		BirthPlace:      input.BirthPlace,
+		BirthDate:       input.BirthDate,
+		EmergencyName:   input.EmergencyName,
+		EmergencyStatus: input.EmergencyPhone,
+		EmergencyPhone:  input.EmergencyStatus,
+		Npwp:            input.Npwp,
+		Bpjs:            input.Bpjs,
+		Religion:        input.Religion,
+		Gender:          input.Gender,
+	}
+	return userImport
+}
+
+func UserEducationCoreToModel(input []users.UserEducationData) []UserEducation {
+	var userEduList []UserEducation
+	for _, value := range input {
+		var userEdu = UserEducation{
+			Name:         value.Name,
+			StartYear:    value.StartYear,
+			GraduateYear: value.GraduateYear,
+		}
+		userEduList = append(userEduList, userEdu)
+	}
+	return userEduList
+}
+
+func ModelToCore(input User) users.UserCore {
+	var userCore = users.UserCore{
+		ID:           input.ID,
+		FirstName:    input.FirstName,
+		LastName:     input.LastName,
+		Email:        input.Email,
+		PhoneNumber:  input.PhoneNumber,
+		Password:     input.Password,
+		Address:      input.Address,
+		ProfilePhoto: input.ProfilePhoto,
+		UserLeadID:   input.UserLeadID,
+		RoleID:       input.RoleID,
+		DivisionID:   input.DivisionID,
+		UserLead:     UserLeadModelToCore(*input.UserLead),
+		Role:         RoleModelToCore(input.Role),
+		Division:     DivisionModelToCore(input.Division),
+		UserImport:   UserImportModelToCore(input.UserImport),
+		UserEdu:      UserEducationModelToCore(input.UserEdu),
+		CreatedAt:    input.CreatedAt,
+		UpdatedAt:    input.UpdatedAt,
+	}
+	return userCore
+}
+
+func UserLeadModelToCore(input User) *users.UserCore {
+	var userLead = users.UserCore{
+		ID:          input.ID,
+		FirstName:   input.FirstName,
+		LastName:    input.LastName,
+		Email:       input.Email,
+		PhoneNumber: input.PhoneNumber,
+		Password:    input.Password,
+		Address:     input.Address,
+		RoleID:      input.RoleID,
+		DivisionID:  input.DivisionID,
+		CreatedAt:   input.CreatedAt,
+		UpdatedAt:   input.UpdatedAt,
+	}
+	return &userLead
+}
+
+func RoleModelToCore(input roleModel.Role) roleCore.RoleCore {
+	var role = roleCore.RoleCore{
+		ID:        input.ID,
+		Name:      input.Name,
+		CreatedAt: input.CreatedAt,
+		UpdatedAt: input.UpdatedAt,
 	}
 	return role
 }
 
-func DivisionModelToCore(DivisionModel divisionModel.Division) divisions.DivisionCore {
-	divisionsData := divisions.DivisionCore{
-		ID:        DivisionModel.ID,
-		Name:      DivisionModel.Name,
-		CreatedAt: DivisionModel.CreatedAt,
-		UpdatedAt: DivisionModel.UpdatedAt,
+func DivisionModelToCore(input divisionModel.Division) divisions.DivisionCore {
+	var division = divisions.DivisionCore{
+		ID:        input.ID,
+		Name:      input.Name,
+		CreatedAt: input.CreatedAt,
+		UpdatedAt: input.UpdatedAt,
 	}
-	return divisionsData
+	return division
 }
 
-func UserImportModelToCore(UserImportModel UserImportant) users.UserImportantData {
-	importantCore := users.UserImportantData{
-		UserID:          UserImportModel.UserID,
-		BirthPlace:      UserImportModel.BirthPlace,
-		BirthDate:       UserImportModel.BirthDate,
-		EmergencyName:   UserImportModel.EmergencyName,
-		EmergencyStatus: UserImportModel.EmergencyStatus,
-		EmergencyPhone:  UserImportModel.EmergencyPhone,
-		Npwp:            UserImportModel.Npwp,
-		Bpjs:            UserImportModel.Bpjs,
-		Religion:        UserImportModel.Religion,
-		Gender:          UserImportModel.Gender,
-		CreatedAt:       UserImportModel.CreatedAt,
-		UpdatedAt:       UserImportModel.UpdatedAt,
+func UserImportModelToCore(input UserImportant) users.UserImportantData {
+	var userImport = users.UserImportantData{
+		ID:              input.ID,
+		UserID:          input.UserID,
+		BirthPlace:      input.BirthPlace,
+		BirthDate:       input.BirthDate,
+		EmergencyName:   input.EmergencyName,
+		EmergencyStatus: input.EmergencyStatus,
+		EmergencyPhone:  input.EmergencyPhone,
+		Npwp:            input.Npwp,
+		Bpjs:            input.Bpjs,
+		Religion:        input.Religion,
+		Gender:          input.Gender,
+		CreatedAt:       input.CreatedAt,
+		UpdatedAt:       input.UpdatedAt,
 	}
-	return importantCore
+	return userImport
 }
 
-func UserEduModelCore(UserEduModel []UserEducation) []users.UserEducationData {
-	var userEduData []users.UserEducationData
-
-	for _, val := range UserEduModel {
+func UserEducationModelToCore(input []UserEducation) []users.UserEducationData {
+	var userEduList []users.UserEducationData
+	for _, value := range input {
 		var userEdu = users.UserEducationData{
-			UserID:       val.UserID,
-			Name:         val.Name,
-			StartYear:    val.StartYear,
-			GraduateYear: val.StartYear,
-			CreatedAt:    val.CreatedAt,
-			UpdatedAt:    val.UpdatedAt,
+			ID:           value.ID,
+			UserID:       value.UserID,
+			Name:         value.Name,
+			StartYear:    value.StartYear,
+			GraduateYear: value.GraduateYear,
+			CreatedAt:    value.CreatedAt,
+			UpdatedAt:    value.UpdatedAt,
 		}
-		userEduData = append(userEduData, userEdu)
+		userEduList = append(userEduList, userEdu)
 	}
-
-	return userEduData
+	return userEduList
 }
