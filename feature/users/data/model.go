@@ -120,7 +120,7 @@ func ModelToCore(input User) users.UserCore {
 		UserLeadID:   input.UserLeadID,
 		RoleID:       input.RoleID,
 		DivisionID:   input.DivisionID,
-		UserLead:     UserLeadModelToCore(*input.UserLead),
+		UserLead:     UserLeadModelToCore(input.UserLead),
 		Role:         RoleModelToCore(input.Role),
 		Division:     DivisionModelToCore(input.Division),
 		UserImport:   UserImportModelToCore(input.UserImport),
@@ -131,19 +131,22 @@ func ModelToCore(input User) users.UserCore {
 	return userCore
 }
 
-func UserLeadModelToCore(input User) *users.UserCore {
-	var userLead = users.UserCore{
-		ID:          input.ID,
-		FirstName:   input.FirstName,
-		LastName:    input.LastName,
-		Email:       input.Email,
-		PhoneNumber: input.PhoneNumber,
-		Password:    input.Password,
-		Address:     input.Address,
-		RoleID:      input.RoleID,
-		DivisionID:  input.DivisionID,
-		CreatedAt:   input.CreatedAt,
-		UpdatedAt:   input.UpdatedAt,
+func UserLeadModelToCore(input *User) *users.UserCore {
+	var userLead users.UserCore
+	if input != nil {
+		userLead = users.UserCore{
+			ID:          input.ID,
+			FirstName:   input.FirstName,
+			LastName:    input.LastName,
+			Email:       input.Email,
+			PhoneNumber: input.PhoneNumber,
+			Password:    input.Password,
+			Address:     input.Address,
+			RoleID:      input.RoleID,
+			DivisionID:  input.DivisionID,
+			CreatedAt:   input.CreatedAt,
+			UpdatedAt:   input.UpdatedAt,
+		}
 	}
 	return &userLead
 }

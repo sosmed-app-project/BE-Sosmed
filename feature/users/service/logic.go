@@ -22,22 +22,22 @@ func (service *UserService) Add(input users.UserCore) error {
 }
 
 // GetAll implements users.UserServiceInterface.
-func (service *UserService) GetAll(role_id string, division_id string) ([]users.UserCore, error) {
+func (service *UserService) GetAll(role_id uint, division_id uint) ([]users.UserCore, error) {
 	result, err := service.userData.SelectAll(role_id, division_id)
 	return result, err
 }
 
 // Update implements users.UserServiceInterface.
-func (service *UserService) Update(id string, input users.UserCore) error {
+func (service *UserService) Update(id uint, input users.UserCore) error {
 	err := service.userData.Update(id, input)
 	return err
 }
 
-func (service *UserService) GetById(id string) (users.UserCore, error) {
+func (service *UserService) GetById(id uint) (users.UserCore, error) {
 	return service.userData.SelectById(id)
 }
 
-func (service *UserService) Delete(id string) error {
+func (service *UserService) Delete(id uint) error {
 	err := service.userData.Delete(id)
 	return err
 }
@@ -48,7 +48,7 @@ func (service *UserService) Login(email string, password string) (dataLogin user
 	if err != nil {
 		return users.UserCore{}, "", err
 	}
-	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.Role.Name, dataLogin.Division.Name)
+	token, err = middlewares.CreateToken(dataLogin.ID, dataLogin.RoleID, dataLogin.DivisionID)
 	if err != nil {
 		return users.UserCore{}, "", err
 	}
