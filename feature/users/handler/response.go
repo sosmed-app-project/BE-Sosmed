@@ -25,7 +25,7 @@ type UserResponseAll struct {
 }
 
 type UserResponse struct {
-	ID                  string                    `json:"id"`
+	ID                  uint                      `json:"id"`
 	First_Name          string                    `json:"first_name"`
 	Last_Name           string                    `json:"last_name"`
 	Email               string                    `json:"email"`
@@ -37,13 +37,20 @@ type UserResponse struct {
 }
 
 type DivisionResponse struct {
-	ID   string `json:"id"`
+	ID   uint   `json:"id"`
 	Name string `json:"name"`
 }
 
 type RoleResponse struct {
 	ID   uint   `json:"id"`
 	Name string `json:"name"`
+}
+
+type UserImportantDataResponse struct {
+	ID          uint      `json:"id"`
+	Birth_Place string    `json:"birth_place"`
+	Birth_Date  time.Time `json:"birth_date"`
+	Religion    string    `json:"Religion"`
 }
 
 func UserCoreToResponseAll(input users.UserCore) UserResponseAll {
@@ -74,11 +81,4 @@ func RoleCoreToResp(input roles.RoleCore) RoleResponse {
 		Name: input.Name,
 	}
 	return role
-}
-
-type UserImportantDataResponse struct {
-	ID          string    `json:"id"`
-	Birth_Place string    `json:"birth_place"`
-	Birth_Date  time.Time `json:"birth_date"`
-	Religion    string    `json:"Religion"`
 }

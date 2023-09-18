@@ -16,7 +16,7 @@ func JWTMiddleware() echo.MiddlewareFunc {
 	})
 }
 
-func CreateToken(userId int, userRole string, userDivision string) (string, error) {
+func CreateToken(userId uint, userRole string, userDivision string) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["userId"] = userId

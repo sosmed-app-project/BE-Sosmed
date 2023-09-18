@@ -73,23 +73,27 @@ func (handler *UserHandler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", nil))
 }
 
-func (handler *UserHandler) Login(c echo.Context) error {
-	var input UserRequest
-	errBind := c.Bind(&input)
-	if errBind != nil {
-		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
+/*
+	func (handler *UserHandler) Login(c echo.Context) error {
+		var input UserRequest
+		errBind := c.Bind(&input)
+		if errBind != nil {
+			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
+		}
+		var inputCore = UserRequestToCore(input)
+		result, token, err := handler.userService.Login(inputCore.Email, inputCore.Password)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
+		}
+		dataResponse := LoginResponse{
+			Role:     result.Role.Name,
+			Division: result.Division.Name,
+			Token:    token,
+		}
+		return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", dataResponse))
 	}
-	var inputCore = UserRequestToCore(input)
-	result, token, err := handler.userService.Login(inputCore.Email, inputCore.Password)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
-	}
-	dataResponse := LoginResponse{
-		Role:     result.Role.Name,
-		Division: result.Division.Name,
-		Token:    token,
-	}
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", dataResponse))
+*/
+
 func (handler *UserHandler) GetUserByID(c echo.Context) error {
 	id := c.Param("user_id")
 
@@ -132,12 +136,11 @@ func (handler *UserHandler) GetUserByID(c echo.Context) error {
 func (handler *UserHandler) DeleteUser(c echo.Context) error {
 	id := c.Param("user_id")
 
-	err := handler.userService.DeleteUserById(id)
+	err := handler.userService.Delete(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error delete data", nil))
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success delete data", nil))
-
 }
 
 func (handler *UserHandler) Login(c echo.Context) error {
@@ -146,7 +149,7 @@ func (handler *UserHandler) Login(c echo.Context) error {
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "error bind data. data not valid", nil))
 	}
-	dataLogin, token, err := handler.userService.LoginUser(userInput.Email, userInput.Password)
+	dataLogin, token, err := handler.userService.Login(userInput.Email, userInput.Password)
 	if err != nil {
 		if strings.Contains(err.Error(), "validation") {
 			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, err.Error(), nil))

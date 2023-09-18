@@ -8,13 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type userQuery struct {
+type UserQuery struct {
 	db        *gorm.DB
 	dataLogin users.UserCore
 }
 
 func New(db *gorm.DB) users.UserDataInterface {
-	return &userQuery{
+	return &UserQuery{
 		db: db,
 	}
 }
@@ -41,7 +41,7 @@ func (repo *UserQuery) Insert(input users.UserCore) error {
 	return nil
 }
 
-func (repo *userQuery) SelectById(id string) (users.UserCore, error) {
+func (repo *UserQuery) SelectById(id string) (users.UserCore, error) {
 	var result User
 	tx := repo.db.Preload("Role").Preload("Division").Preload("UserImport").Find(&result, id)
 	if tx.Error != nil {
@@ -55,7 +55,7 @@ func (repo *userQuery) SelectById(id string) (users.UserCore, error) {
 	return resultCore, nil
 }
 
-func (repo *userQuery) DeleteById(id string) error {
+func (repo *UserQuery) Delete(id string) error {
 	var userGorm User
 	tx := repo.db.Where("id = ?", id).Delete(&userGorm)
 	if tx.Error != nil {
@@ -105,7 +105,7 @@ func (repo *UserQuery) Update(id string, input users.UserCore) error {
 	return nil
 }
 
-func (repo *userQuery) Login(email string, password string) (dataLogin users.UserCore, err error) {
+func (repo *UserQuery) Login(email string, password string) (dataLogin users.UserCore, err error) {
 
 	var data User
 	tx := repo.db.Where("email = ? and password = ?", email, password).Find(&data)
