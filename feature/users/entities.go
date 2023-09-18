@@ -55,18 +55,18 @@ type UserEducationData struct {
 
 type UserDataInterface interface {
 	Insert(input UserCore) error
-	SelectAll(role_id, division_id string) ([]UserCore, error)
-	SelectById(id string) (UserCore, error)
-	Update(id string, input UserCore) error
-	Delete(id string) error
+	SelectAll(role_id, division_id uint) ([]UserCore, error)
+	SelectById(id uint) (UserCore, error)
+	Update(id uint, input UserCore) error
+	Delete(id uint) error
 	Login(email, password string) (UserCore, error)
 }
 
 type UserServiceInterface interface {
 	Add(input UserCore) error
-	GetAll(role_id, division_id string) ([]UserCore, error)
-	GetById(id string) (UserCore, error)
-	Update(id string, input UserCore) error
-	Delete(id string) error
+	GetAll(role_id, division_id uint) ([]UserCore, error)
+	GetById(id uint) (UserCore, error)
+	Update(id uint, input UserCore) error
+	Delete(id uint) error
 	Login(email, password string) (UserCore, string, error)
 }

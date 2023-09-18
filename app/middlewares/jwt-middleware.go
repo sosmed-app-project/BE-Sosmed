@@ -16,44 +16,44 @@ func JWTMiddleware() echo.MiddlewareFunc {
 	})
 }
 
-func CreateToken(userId uint, userRole string, userDivision string) (string, error) {
+func CreateToken(userId uint, roleId uint, divisionId uint) (string, error) {
 	claims := jwt.MapClaims{}
 	claims["authorized"] = true
 	claims["userId"] = userId
-	claims["userRole"] = userRole
-	claims["userDivision"] = userDivision
+	claims["roleId"] = roleId
+	claims["divisionId"] = divisionId
 	claims["exp"] = time.Now().Add(time.Hour * 48).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return token.SignedString([]byte(config.JWT_SECRRET))
 }
 
-func ExtractTokenUserId(e echo.Context) string {
+func ExtractTokenUserId(e echo.Context) uint {
 	user := e.Get("user").(*jwt.Token)
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
-		userId := claims["userId"].(string)
-		return userId
+		userId := claims["userId"].(float64)
+		return uint(userId)
 	}
-	return ""
+	return 0
 }
 
-func ExtractTokenUserRoleId(e echo.Context) string {
+func ExtractTokenUserRoleId(e echo.Context) uint {
 	user := e.Get("user").(*jwt.Token)
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
-		userRole := claims["userRole"].(string)
-		return userRole
+		roleId := claims["roleId"].(float64)
+		return uint(roleId)
 	}
-	return ""
+	return 0
 }
 
-func ExtractTokenUserDivisionId(e echo.Context) string {
+func ExtractTokenUserDivisionId(e echo.Context) uint {
 	user := e.Get("user").(*jwt.Token)
 	if user.Valid {
 		claims := user.Claims.(jwt.MapClaims)
-		userDivision := claims["userDivision"].(string)
-		return userDivision
+		divisionId := claims["divisionId"].(float64)
+		return uint(divisionId)
 	}
-	return ""
+	return 0
 }

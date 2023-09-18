@@ -5,6 +5,7 @@ import (
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -60,13 +61,17 @@ func (handler *UserHandler) GetAll(c echo.Context) error {
 
 func (handler *UserHandler) Update(c echo.Context) error {
 	id := c.Param("user_id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
+	}
 	var input UserRequest
 	errBind := c.Bind(&input)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
 	}
 	var userCore = UserRequestToCore(input)
-	err := handler.userService.Update(id, userCore)
+	err := handler.userService.Update(uint(idConv), userCore)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
 	}
@@ -96,8 +101,11 @@ func (handler *UserHandler) Update(c echo.Context) error {
 
 func (handler *UserHandler) GetUserByID(c echo.Context) error {
 	id := c.Param("user_id")
-
-	result, err := handler.userService.GetById(id)
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
+	}
+	result, err := handler.userService.GetById(uint(idConv))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Id Harus berupa string")
 	}
@@ -135,8 +143,12 @@ func (handler *UserHandler) GetUserByID(c echo.Context) error {
 
 func (handler *UserHandler) DeleteUser(c echo.Context) error {
 	id := c.Param("user_id")
+	idConv, errConv := strconv.Atoi(id)
+	if errConv != nil {
+		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
+	}
 
-	err := handler.userService.Delete(id)
+	err := handler.userService.Delete(uint(idConv))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error delete data", nil))
 	}
@@ -158,11 +170,16 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
-	response := map[string]any{
-		"token": token,
-		"role":  dataLogin.Role,
-		"id":    dataLogin.ID,
-		"email": dataLogin.Email,
+	// response := map[string]any{
+	// 	"token": token,
+	// 	"role":  dataLogin.Role,
+	// 	"id":    dataLogin.ID,
+	// 	"email": dataLogin.Email,
+	// }
+	var response = LoginResponse{
+		Role:     dataLogin.Role.Name,
+		Division: dataLogin.Division.Name,
+		Token:    token,
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success login", response))
 }
