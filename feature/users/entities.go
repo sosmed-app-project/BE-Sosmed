@@ -53,8 +53,12 @@ type UserEducationData struct {
 
 type UserDataInterface interface {
 	SelectById(id string) (UserCore, error)
+	DeleteById(id string) error
+	Login(email string, password string) (dataLogin UserCore, err error)
 }
 
 type UserServiceInterface interface {
 	GetById(id string) (UserCore, error)
+	DeleteUserById(id string) error
+	LoginUser(email string, password string) (dataLogin UserCore, token string, err error)
 }
