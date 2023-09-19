@@ -68,7 +68,7 @@ func UserCoreToModel(input users.UserCore) User {
 		LastName:     input.LastName,
 		Email:        input.Email,
 		PhoneNumber:  input.PhoneNumber,
-		Password:     input.Password,
+		Password:     input.Password,							
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
 		UserLeadID:   input.UserLeadID,
