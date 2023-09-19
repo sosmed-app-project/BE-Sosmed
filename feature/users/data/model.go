@@ -20,10 +20,9 @@ type User struct {
 	Password     string                 `gorm:"column:password;not null;default:'qwerty'"`
 	Address      string                 `gorm:"column:address"`
 	ProfilePhoto string                 `gorm:"column:profile_photo"`
-	UserLeadID   *uint                  `gorm:"column:user_lead_id"`
-	RoleID       uint                   `gorm:"column:role_id"`
-	DivisionID   uint                   `gorm:"column:division_id"`
-	UserLead     *User                  `gorm:"foreignKey:UserLeadID"`
+	UserLeadID   uint                   `gorm:"column:user_lead_id"`
+	RoleID       *uint                  `gorm:"column:role_id"`
+	DivisionID   *uint                  `gorm:"column:division_id"`
 	Role         roleModel.Role         `gorm:"foreignKey:RoleID"`
 	Division     divisionModel.Division `gorm:"foreignKey:DivisionID"`
 	UserImport   UserImportant          `gorm:"foreignKey:UserID"`
@@ -31,6 +30,7 @@ type User struct {
 	CreatedAt    time.Time              `gorm:"column:created_at"`
 	UpdatedAt    time.Time              `gorm:"column:updated_at"`
 	DeletedAt    gorm.DeletedAt         `gorm:"column:deleted_at;index"`
+	// UserLead     *User                  `gorm:"foreignKey:UserLeadID"`
 }
 
 type UserImportant struct {
@@ -63,6 +63,7 @@ type UserEducation struct {
 
 func UserCoreToModel(input users.UserCore) User {
 	var userModel = User{
+		ID:           input.ID,
 		FirstName:    input.FirstName,
 		LastName:     input.LastName,
 		Email:        input.Email,
@@ -71,13 +72,29 @@ func UserCoreToModel(input users.UserCore) User {
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
 		UserLeadID:   input.UserLeadID,
-		RoleID:       input.RoleID,
-		DivisionID:   input.DivisionID,
+		RoleID:       &input.RoleID,
+		DivisionID:   &input.DivisionID,
 		UserImport:   UserImportantCoreToModel(input.UserImport),
 		UserEdu:      UserEducationCoreToModel(input.UserEdu),
+		// UserLead:     UserLeadCoreToModel(input.UserLead),
 	}
 	return userModel
 }
+
+// func UserLeadCoreToModel(input *users.UserCore) *User {
+// 	var userLead User
+// 	if input != nil {
+// 		userLead = User{
+// 			ID:        input.ID,
+// 			FirstName: input.FirstName,
+// 			LastName:  input.LastName,
+// 			Email:     input.Email,
+// 			CreatedAt: input.CreatedAt,
+// 			UpdatedAt: input.UpdatedAt,
+// 		}
+// 	}
+// 	return &userLead
+// }
 
 func UserImportantCoreToModel(input users.UserImportantData) UserImportant {
 	var userImport = UserImportant{
@@ -118,38 +135,38 @@ func ModelToCore(input User) users.UserCore {
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
 		UserLeadID:   input.UserLeadID,
-		RoleID:       input.RoleID,
-		DivisionID:   input.DivisionID,
-		UserLead:     UserLeadModelToCore(input.UserLead),
+		RoleID:       *input.RoleID,
+		DivisionID:   *input.DivisionID,
 		Role:         RoleModelToCore(input.Role),
 		Division:     DivisionModelToCore(input.Division),
 		UserImport:   UserImportModelToCore(input.UserImport),
 		UserEdu:      UserEducationModelToCore(input.UserEdu),
 		CreatedAt:    input.CreatedAt,
 		UpdatedAt:    input.UpdatedAt,
+		// UserLead:     UserLeadModelToCore(input.UserLead),
 	}
 	return userCore
 }
 
-func UserLeadModelToCore(input *User) *users.UserCore {
-	var userLead users.UserCore
-	if input != nil {
-		userLead = users.UserCore{
-			ID:          input.ID,
-			FirstName:   input.FirstName,
-			LastName:    input.LastName,
-			Email:       input.Email,
-			PhoneNumber: input.PhoneNumber,
-			Password:    input.Password,
-			Address:     input.Address,
-			RoleID:      input.RoleID,
-			DivisionID:  input.DivisionID,
-			CreatedAt:   input.CreatedAt,
-			UpdatedAt:   input.UpdatedAt,
-		}
-	}
-	return &userLead
-}
+// func UserLeadModelToCore(input *User) *users.UserCore {
+// 	var userLead users.UserCore
+// 	if input != nil {
+// 		userLead = users.UserCore{
+// 			ID:          input.ID,
+// 			FirstName:   input.FirstName,
+// 			LastName:    input.LastName,
+// 			Email:       input.Email,
+// 			PhoneNumber: input.PhoneNumber,
+// 			Password:    input.Password,
+// 			Address:     input.Address,
+// 			RoleID:      *input.RoleID,
+// 			DivisionID:  *input.DivisionID,
+// 			CreatedAt:   input.CreatedAt,
+// 			UpdatedAt:   input.UpdatedAt,
+// 		}
+// 	}
+// 	return &userLead
+// }
 
 func RoleModelToCore(input roleModel.Role) roleCore.RoleCore {
 	var role = roleCore.RoleCore{

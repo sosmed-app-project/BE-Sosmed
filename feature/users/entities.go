@@ -15,16 +15,16 @@ type UserCore struct {
 	Password     string
 	Address      string
 	ProfilePhoto string
-	UserLeadID   *uint
+	UserLeadID   uint
 	RoleID       uint
 	DivisionID   uint
-	UserLead     *UserCore
 	Role         roleCore.RoleCore
 	Division     divisionCore.DivisionCore
 	UserImport   UserImportantData
 	UserEdu      []UserEducationData
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
+	// UserLead     *UserCore
 }
 
 type UserImportantData struct {

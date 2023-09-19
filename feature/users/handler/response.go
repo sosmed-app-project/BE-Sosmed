@@ -25,15 +25,15 @@ type UserResponseAll struct {
 }
 
 type UserResponse struct {
-	ID                  uint                      `json:"id"`
-	First_Name          string                    `json:"first_name"`
-	Last_Name           string                    `json:"last_name"`
-	Email               string                    `json:"email"`
-	Phone_Number        string                    `json:"phone_number"`
-	Address             string                    `json:"address"`
-	Division            DivisionResponse          `json:"division"`
-	Role                RoleResponse              `json:"role"`
-	User_Important_Data UserImportantDataResponse `json:"user_important_data"`
+	ID            uint                      `json:"id"`
+	FirstName     string                    `json:"first_name"`
+	LastName      string                    `json:"last_name"`
+	Email         string                    `json:"email"`
+	PhoneNumber   string                    `json:"phone_number"`
+	Address       string                    `json:"address"`
+	Division      DivisionResponse          `json:"division"`
+	Role          RoleResponse              `json:"role"`
+	UserImportant UserImportantDataResponse `json:"user_important_data"`
 }
 
 type DivisionResponse struct {
@@ -51,6 +51,21 @@ type UserImportantDataResponse struct {
 	Birth_Place string    `json:"birth_place"`
 	Birth_Date  time.Time `json:"birth_date"`
 	Religion    string    `json:"Religion"`
+}
+
+func UserCoreToResponse(input users.UserCore) UserResponse {
+	var resultResponse = UserResponse{
+		ID:            input.ID,
+		FirstName:     input.FirstName,
+		LastName:      input.LastName,
+		Email:         input.Email,
+		PhoneNumber:   input.PhoneNumber,
+		Address:       input.Address,
+		Division:      DivisionCoreToResponse(input.Division),
+		Role:          RoleCoreToResp(input.Role),
+		UserImportant: UserImportCoreToResponse(input.UserImport),
+	}
+	return resultResponse
 }
 
 func UserCoreToResponseAll(input users.UserCore) UserResponseAll {
@@ -81,4 +96,14 @@ func RoleCoreToResp(input roles.RoleCore) RoleResponse {
 		Name: input.Name,
 	}
 	return role
+}
+
+func UserImportCoreToResponse(input users.UserImportantData) UserImportantDataResponse {
+	var resp = UserImportantDataResponse{
+		ID:          input.ID,
+		Birth_Place: input.BirthPlace,
+		Birth_Date:  input.BirthDate,
+		Religion:    input.Religion,
+	}
+	return resp
 }
