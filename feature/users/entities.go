@@ -55,7 +55,7 @@ type UserEducationData struct {
 
 type UserDataInterface interface {
 	Insert(input UserCore) error
-	SelectAll(role_id, division_id uint) ([]UserCore, error)
+	SelectAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, int64, error)
 	SelectById(id uint) (UserCore, error)
 	Update(id uint, input UserCore) error
 	Delete(id uint) error
@@ -64,7 +64,7 @@ type UserDataInterface interface {
 
 type UserServiceInterface interface {
 	Add(input UserCore) error
-	GetAll(role_id, division_id uint) ([]UserCore, error)
+	GetAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, bool, error)
 	GetById(id uint) (UserCore, error)
 	Update(id uint, input UserCore) error
 	Delete(id uint) error
