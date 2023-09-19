@@ -437,7 +437,7 @@ paths:
       tags:
         - Roles
       summary: get all roles
-      description: this endpoint to delete user by id using param
+      description: this endpoint to get all roles data
       responses:
         "200":
           description: success
@@ -476,7 +476,49 @@ paths:
         "500":
           $ref: "#/components/responses/responseInternalError"
                   
-                  
+  /divisions:
+    get:
+      tags:
+        - Divisions
+      summary: get all divisions
+      description: this endpoint to get all divisions data
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "code":
+                    type: integer
+                    format: int64
+                    example: 200
+                  "message":
+                    type: string
+                    example: success
+                  "data":
+                    type: array
+                    items:
+                      properties:
+                        "id":
+                          type: integer
+                          format: int64
+                        "name":
+                          type: string
+                    example:
+                      - id: 1
+                        name: General Division
+                      - id: 2
+                        name: Human Resource
+                      - id: 3
+                        name: Information Technology
+                      - id: 4
+                        name: Marketing
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
         
 components:
   responses:
