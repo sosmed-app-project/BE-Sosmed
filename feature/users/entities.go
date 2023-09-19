@@ -31,7 +31,7 @@ type UserImportantData struct {
 	ID              uint
 	UserID          uint
 	BirthPlace      string
-	BirthDate       time.Time
+	BirthDate       string
 	EmergencyName   string
 	EmergencyStatus string
 	EmergencyPhone  string

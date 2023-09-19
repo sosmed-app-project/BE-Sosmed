@@ -139,6 +139,9 @@ func (handler *UserHandler) DeleteUser(c echo.Context) error {
 
 	err := handler.userService.Delete(uint(idConv))
 	if err != nil {
+		if strings.Contains(err.Error(), "no row affected") {
+			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "error delete data, data not found", nil))
+		}
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error delete data", nil))
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success delete data", nil))

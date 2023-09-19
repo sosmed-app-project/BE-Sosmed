@@ -60,10 +60,12 @@ func (repo *UserQuery) SelectById(id uint) (users.UserCore, error) {
 }
 
 func (repo *UserQuery) Delete(id uint) error {
-	var userGorm User
-	tx := repo.db.Where("id = ?", id).Delete(&userGorm)
+	tx := repo.db.Where("id = ?", id).Delete(&User{})
 	if tx.Error != nil {
 		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return errors.New("no row affected")
 	}
 	return nil
 }

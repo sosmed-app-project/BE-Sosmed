@@ -1,13 +1,15 @@
-openapi: '3.0.2'
-info:
-  title: API HRIS-APP-Immersive
-  description: The documentation of endpoints for HRIS-APP team 2
-  version: 1.0.0
+openapi: 3.0.0
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/ilham9d27/1.0.2
-  - url: https://api.server.test/v1
+    url: https://virtserver.swaggerhub.com/ILHAM9D27_1/HRIS-APP-Team-2/1.0.0
+info:
+  description: This is a simple API
+  version: "1.0.0"
+  title: Simple HRIS API
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 tags:
   - name: Auth
   - name: Users
@@ -229,6 +231,13 @@ paths:
         - Users
       summary: get specific user data
       description: get specific user data using user id
+      parameters:
+        - name: user_id
+          description: "identifier user"
+          required: true
+          in: path
+          schema:
+            type: number
       responses:
         "200":
           description: success
@@ -297,6 +306,13 @@ paths:
         - Users
       summary: add new user
       description: this endpoint to add new user by sending all information require
+      parameters:
+        - name: user_id
+          description: "identifier user"
+          required: true
+          in: path
+          schema:
+            type: number
       requestBody:
         required: true
         content:
