@@ -1,6 +1,4 @@
 package service
-<<<<<<< feature/users
-=======
 
 import (
 	"hris-app-golang/feature/divisions"
@@ -61,4 +59,3 @@ func (service *DivisionService) Delete(id uint) error {
 	}
 	return nil
 }
->>>>>>> local

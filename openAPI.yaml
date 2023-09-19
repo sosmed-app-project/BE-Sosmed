@@ -426,7 +426,7 @@ paths:
           $ref: "#/components/responses/responseBadRequest"
         "500":
           $ref: "#/components/responses/responseInternalError"
-    
+
     delete:
       tags:
         - Users
@@ -455,7 +455,7 @@ paths:
       tags:
         - Roles
       summary: get all roles
-      description: this endpoint to get all roles data using param
+      description: this endpoint to get all roles data
       responses:
         "200":
           description: success
@@ -493,7 +493,7 @@ paths:
           $ref: "#/components/responses/responseNotFound"
         "500":
           $ref: "#/components/responses/responseInternalError"
-  
+                  
   /divisions:
     get:
       tags:
@@ -537,7 +537,7 @@ paths:
           $ref: "#/components/responses/responseNotFound"
         "500":
           $ref: "#/components/responses/responseInternalError"
-
+        
 components:
   responses:
     #########################
@@ -560,7 +560,6 @@ components:
               "data":
                 type: object
                 example: null
-                
     responseCreated:
       description: success
       content:
