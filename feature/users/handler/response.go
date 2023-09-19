@@ -47,10 +47,10 @@ type RoleResponse struct {
 }
 
 type UserImportantDataResponse struct {
-	ID          uint      `json:"id"`
-	Birth_Place string    `json:"birth_place"`
-	Birth_Date  time.Time `json:"birth_date"`
-	Religion    string    `json:"Religion"`
+	ID          uint   `json:"id"`
+	Birth_Place string `json:"birth_place"`
+	Birth_Date  string `json:"birth_date"`
+	Religion    string `json:"Religion"`
 }
 
 func UserCoreToResponse(input users.UserCore) UserResponse {

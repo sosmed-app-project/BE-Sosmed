@@ -37,7 +37,7 @@ type UserImportant struct {
 	ID              uint           `gorm:"column:id;primaryKey"`
 	UserID          uint           `gorm:"column:user_id"`
 	BirthPlace      string         `gorm:"column:birth_place"`
-	BirthDate       time.Time      `gorm:"column:birth_date"`
+	BirthDate       string         `gorm:"column:birth_date"`
 	EmergencyName   string         `gorm:"column:emergency_name"`
 	EmergencyStatus string         `gorm:"column:emergency_status"`
 	EmergencyPhone  string         `gorm:"column:emergency_phone"`
