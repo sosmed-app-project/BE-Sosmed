@@ -64,12 +64,10 @@ func (handler *UserHandler) GetAll(c echo.Context) error {
 
 func (handler *UserHandler) Update(c echo.Context) error {
 	id := c.Param("user_id")
-	// role_id := middleware.ExtractTokenUserRoleId(c)
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
 	}
-
 	var input UserRequest
 	errBind := c.Bind(&input)
 	if errBind != nil {
@@ -82,27 +80,6 @@ func (handler *UserHandler) Update(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", nil))
 }
-
-/*
-	func (handler *UserHandler) Login(c echo.Context) error {
-		var input UserRequest
-		errBind := c.Bind(&input)
-		if errBind != nil {
-			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
-		}
-		var inputCore = UserRequestToCore(input)
-		result, token, err := handler.userService.Login(inputCore.Email, inputCore.Password)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
-		}
-		dataResponse := LoginResponse{
-			Role:     result.Role.Name,
-			Division: result.Division.Name,
-			Token:    token,
-		}
-		return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", dataResponse))
-	}
-*/
 
 func (handler *UserHandler) GetUserByID(c echo.Context) error {
 	id := c.Param("user_id")
@@ -131,6 +108,10 @@ func (handler *UserHandler) GetUserByID(c echo.Context) error {
 }
 
 func (handler *UserHandler) DeleteUser(c echo.Context) error {
+	role_id := middleware.ExtractTokenUserRoleId(c)
+	if role_id != 2 && role_id != 1 {
+		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "opeartion failed, request resource not allowed", nil))
+	}
 	id := c.Param("user_id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
@@ -162,12 +143,6 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
-	// response := map[string]any{
-	// 	"token": token,
-	// 	"role":  dataLogin.Role,
-	// 	"id":    dataLogin.ID,
-	// 	"email": dataLogin.Email,
-	// }
 	var response = LoginResponse{
 		Role:     dataLogin.Role.Name,
 		Division: dataLogin.Division.Name,
