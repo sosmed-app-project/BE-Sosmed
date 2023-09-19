@@ -47,7 +47,7 @@ func UserRequestToCore(input UserRequest) users.UserCore {
 		Password:     input.Password,
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
-		UserLeadID:   &input.UserLeadID,
+		UserLeadID:   input.UserLeadID,
 		RoleID:       input.RoleID,
 		DivisionID:   input.DivisionID,
 		UserImport:   UserImportantRequestToCore(input.UserImport),

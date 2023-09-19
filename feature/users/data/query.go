@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
+	"reflect"
 
 	"gorm.io/gorm"
 )
@@ -22,16 +23,18 @@ func New(db *gorm.DB) users.UserDataInterface {
 
 // Insert implements users.UserDataInterface.
 func (repo *UserQuery) Insert(input users.UserCore) error {
+	fmt.Println("lead_id before mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	var userModel = UserCoreToModel(input)
-	var errGen error
-	if errGen != nil {
-		return errGen
-	}
+	fmt.Println("lead_id after mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
+	fmt.Println(userModel)
+
 	hass, errHass := helper.HassPassword(userModel.Password)
 	if errHass != nil {
 		return errHass
 	}
 	userModel.Password = hass
+	fmt.Println(userModel)
+
 	tx := repo.db.Create(&userModel)
 	if tx.Error != nil {
 		return tx.Error
@@ -68,17 +71,25 @@ func (repo *UserQuery) Delete(id uint) error {
 // SelectAll implements users.UserDataInterface.
 func (repo *UserQuery) SelectAll(role_id uint, division_id uint) ([]users.UserCore, error) {
 	var userModel []User
-	fmt.Println("divisi_id:", division_id)
-	if role_id == 3 {
-		tx := repo.db.Where("role_id in (1,2)").Preload("UserLead").Find(&userModel)
+	// fmt.Println("divisi_id:", division_id)
+	if role_id == 3 || role_id == 4 {
+		tx := repo.db.Where("role_id in (3,4) and division_id = ?", division_id).Preload("Role").Preload("Division").Preload("UserImport").Find(&userModel)
 		if tx.Error != nil {
 			return nil, tx.Error
 		}
 		if tx.RowsAffected == 0 {
 			return nil, errors.New("no row affected")
 		}
-	} else if role_id == 1 || role_id == 2 {
-		tx := repo.db.Where("role_id in (1,2) and division_id = ?", division_id).Preload("UserLead").Find(&userModel)
+	} else if role_id == 2 {
+		tx := repo.db.Where("role_id in (3,4)").Preload("Role").Preload("Division").Preload("UserImport").Find(&userModel)
+		if tx.Error != nil {
+			return nil, tx.Error
+		}
+		if tx.RowsAffected == 0 {
+			return nil, errors.New("no row affected")
+		}
+	} else if role_id == 1 {
+		tx := repo.db.Where("role_id in (1,2,3,4)").Preload("Role").Preload("Division").Preload("UserImport").Find(&userModel)
 		if tx.Error != nil {
 			return nil, tx.Error
 		}
@@ -86,7 +97,7 @@ func (repo *UserQuery) SelectAll(role_id uint, division_id uint) ([]users.UserCo
 			return nil, errors.New("no row affected")
 		}
 	}
-	fmt.Println("ini id lead:", userModel[0].UserLeadID)
+	// fmt.Println("ini id lead:", userModel[0].UserLeadID)
 	// fmt.Println("ini id dari user lead:", userModel[0].UserLead.ID)
 
 	var userCore []users.UserCore
@@ -116,7 +127,7 @@ func (repo *UserQuery) Login(email string, password string) (dataLogin users.Use
 
 	var data User
 
-	tx := repo.db.Where("email = ?", email).Preload("UserLead").Preload("Role").Preload("Division").Find(&data)
+	tx := repo.db.Where("email = ?", email).Preload("Role").Preload("Division").Find(&data)
 	if tx.Error != nil {
 		return users.UserCore{}, tx.Error
 	}
