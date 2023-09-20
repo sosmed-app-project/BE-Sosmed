@@ -5,7 +5,9 @@ import (
 	middleware "hris-app-golang/app/middlewares"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
+	"io"
 	"net/http"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -137,7 +139,7 @@ func (handler *UserHandler) GetUserByID(c echo.Context) error {
 
 func (handler *UserHandler) DeleteUser(c echo.Context) error {
 	role_id := middleware.ExtractTokenUserRoleId(c)
-	if role_id != 2 && role_id != 1 {
+	if role_id != 1 && role_id != 2 {
 		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "opeartion failed, request resource not allowed", nil))
 	}
 	id := c.Param("user_id")
@@ -171,6 +173,7 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
+
 	var response = LoginResponse{
 		ID:       dataLogin.ID,
 		Role:     dataLogin.Role.Name,
@@ -178,4 +181,50 @@ func (handler *UserHandler) Login(c echo.Context) error {
 		Token:    token,
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success login", response))
+}
+
+func (handler *UserHandler) GetAllManager(c echo.Context) error {
+	result, err := handler.userService.GetAllManager()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
+	}
+
+	var userResp []ManagerResponse
+	for _, value := range result {
+		var resp = UserCoreToManagerResponse(value)
+		userResp = append(userResp, resp)
+	}
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", userResp))
+}
+
+func Upload(c echo.Context) error {
+
+	//-----------
+	// Read file
+	//-----------
+
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error upload "+err.Error(), nil))
+	}
+	src, err := file.Open()
+	if err != nil {
+		return err
+	}
+	defer src.Close()
+
+	// Destination
+	dst, err := os.Create("files/" + file.Filename)
+	if err != nil {
+		return err
+	}
+	defer dst.Close()
+
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success upload file", nil))
 }

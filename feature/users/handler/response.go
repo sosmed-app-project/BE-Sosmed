@@ -54,6 +54,13 @@ type UserImportantDataResponse struct {
 	Religion    string `json:"Religion"`
 }
 
+type ManagerResponse struct {
+	ID        uint
+	FirstName string
+	LastName  string
+	Division  string
+}
+
 func UserCoreToResponse(input users.UserCore) UserResponse {
 	var resultResponse = UserResponse{
 		ID:            input.ID,
@@ -107,4 +114,14 @@ func UserImportCoreToResponse(input users.UserImportantData) UserImportantDataRe
 		Religion:    input.Religion,
 	}
 	return resp
+}
+
+func UserCoreToManagerResponse(input users.UserCore) ManagerResponse {
+	var userMan = ManagerResponse{
+		ID:        input.ID,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Division:  input.Division.Name,
+	}
+	return userMan
 }
