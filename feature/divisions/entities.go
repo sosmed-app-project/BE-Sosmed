@@ -12,9 +12,9 @@ type DivisionCore struct {
 }
 
 type DivisionDataInterface interface {
-    Insert(division DivisionCore) error
-    SelectAll() ([]DivisionCore, error)
-    SelectByID(id uint) (DivisionCore, error)
-    Update(id uint, division DivisionCore) error
-    Delete(id uint) error
+	Read() ([]DivisionCore, error)
+}
+
+type DivisionServiceInterface interface {
+	GetDiv() ([]DivisionCore, error)
 }
