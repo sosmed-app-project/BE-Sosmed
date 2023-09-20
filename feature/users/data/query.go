@@ -21,6 +21,24 @@ func New(db *gorm.DB) users.UserDataInterface {
 	}
 }
 
+// GetAllManager implements users.UserDataInterface.
+func (repo *UserQuery) GetAllManager() ([]users.UserCore, error) {
+	var userModel []User
+	tx := repo.db.Preload("Division").Where("role_id = 3").Find(&userModel)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return nil, errors.New("no row affected")
+	}
+	var userCore []users.UserCore
+	for _, value := range userModel {
+		var user = ModelToCore(value)
+		userCore = append(userCore, user)
+	}
+	return userCore, nil
+}
+
 // Insert implements users.UserDataInterface.
 func (repo *UserQuery) Insert(input users.UserCore) error {
 	fmt.Println("lead_id before mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
@@ -126,7 +144,9 @@ func (repo *UserQuery) SelectAll(role_id uint, division_id, page, item uint, sea
 // Update implements users.UserDataInterface.
 func (repo *UserQuery) Update(id uint, input users.UserCore) error {
 	var userModel = UserCoreToModel(input)
-	tx := repo.db.Model(&User{}).Where("id = ?", id).Updates(userModel)
+	fmt.Println(userModel.UserImport.EmergencyName)
+	fmt.Println(userModel.UserEdu[0].Name)
+	tx := repo.db.Session(&gorm.Session{FullSaveAssociations: true}).Model(&User{}).Where("id = ?", id).Updates(&userModel)
 	if tx.Error != nil {
 		return tx.Error
 	}

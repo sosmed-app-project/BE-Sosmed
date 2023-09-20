@@ -60,6 +60,7 @@ type UserDataInterface interface {
 	Update(id uint, input UserCore) error
 	Delete(id uint) error
 	Login(email, password string) (UserCore, error)
+	GetAllManager() ([]UserCore, error)
 }
 
 type UserServiceInterface interface {
@@ -69,4 +70,5 @@ type UserServiceInterface interface {
 	Update(id uint, input UserCore) error
 	Delete(id uint) error
 	Login(email, password string) (UserCore, string, error)
+	GetAllManager() ([]UserCore, error)
 }

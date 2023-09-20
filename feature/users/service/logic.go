@@ -15,6 +15,12 @@ func New(repo users.UserDataInterface) users.UserServiceInterface {
 	}
 }
 
+// GetAllManager implements users.UserServiceInterface.
+func (service *UserService) GetAllManager() ([]users.UserCore, error) {
+	result, err := service.userData.GetAllManager()
+	return result, err
+}
+
 // Add implements users.UserServiceInterface.
 func (service *UserService) Add(input users.UserCore) error {
 	err := service.userData.Insert(input)
