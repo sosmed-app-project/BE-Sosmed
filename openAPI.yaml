@@ -238,6 +238,24 @@ paths:
           in: path
           schema:
             type: number
+        - name: page
+          description: "curren page"
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: itemsPerPage
+          description: "count of items every page"
+          required: false
+          in: query
+          schema:
+            type: number
+        - name: searchName
+          description: "searching for user name"
+          required: false
+          in: query
+          schema:
+            type: number
       responses:
         "200":
           description: success
@@ -542,7 +560,6 @@ components:
               "data":
                 type: object
                 example: null
-
     responseCreated:
       description: success
       content:
