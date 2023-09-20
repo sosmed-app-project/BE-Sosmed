@@ -1,19 +1,23 @@
 package service
 
-import "hris-app-golang/feature/roles"
+import (
+	"hris-app-golang/feature/roles"
+)
 
 type RoleService struct {
-	RoleData roles.RoleDataInterface
+	roleData roles.RoleDataInterface
 }
 
-// GetAllRoles implements roles.RoleServiceInterface.
-func (servis *RoleService) GetAllRoles() ([]roles.RoleCore, error) {
-	var res, err = servis.RoleData.GetAllRoles()
-	return res, err
-}
-
-func New(repo roles.RoleDataInterface) roles.RoleServiceInterface {
+func NewRoleService(repo roles.RoleDataInterface) roles.RoleServiceInterface {
 	return &RoleService{
-		RoleData: repo,
+		roleData: repo,
 	}
+}
+
+func (service *RoleService) GetAllRoles() ([]roles.RoleCore, error) {
+	result, err := service.roleData.Read()
+	if err != nil {
+		return []roles.RoleCore{}, err
+	}
+	return result, err
 }

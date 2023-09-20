@@ -3,8 +3,13 @@ package router
 import (
 	middlewares "hris-app-golang/app/middlewares"
 
+	_divisionData "hris-app-golang/feature/divisions/data"
+	_divisionHandler "hris-app-golang/feature/divisions/handler"
+	_divisionService "hris-app-golang/feature/divisions/service"
+	_roleData "hris-app-golang/feature/roles/data"
+	_roleHandler "hris-app-golang/feature/roles/handler"
+	_roleService "hris-app-golang/feature/roles/service"
 	_userData "hris-app-golang/feature/users/data"
-	"hris-app-golang/feature/users/handler"
 	_userHandler "hris-app-golang/feature/users/handler"
 	_userService "hris-app-golang/feature/users/service"
 
@@ -17,6 +22,14 @@ func InitRouter(db *gorm.DB, c *echo.Echo) {
 	UserService := _userService.New(UserData)
 	UserHandlerAPI := _userHandler.New(UserService)
 
+	DivisionData := _divisionData.NewDivisionQuery(db)
+	DivisionService := _divisionService.NewDivisionService(DivisionData)
+	DivisionHandlerAPI := _divisionHandler.NewDivisionsHandler(DivisionService)
+
+	RoleData := _roleData.NewRoleQuery(db)
+	RoleService := _roleService.NewRoleService(RoleData)
+	RoleHandlerAPI := _roleHandler.NewRoleHandler(RoleService)
+
 	c.POST("/login", UserHandlerAPI.Login)
 
 	c.POST("/users", UserHandlerAPI.Add)
@@ -27,6 +40,9 @@ func InitRouter(db *gorm.DB, c *echo.Echo) {
 
 	c.GET("/managers", UserHandlerAPI.GetAllManager, middlewares.JWTMiddleware())
 
-	c.POST("/upload", handler.Upload)
+	// c.POST("/upload", handler.Upload)
 
+	c.GET("/roles", RoleHandlerAPI.GetAllRoles)
+
+	c.GET("/divisions", DivisionHandlerAPI.GetAllDivisions)
 }

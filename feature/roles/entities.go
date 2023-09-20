@@ -8,9 +8,8 @@ type RoleCore struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-
 type RoleDataInterface interface {
-	GetAllRoles() ([]RoleCore, error)
+	Read() ([]RoleCore, error)
 }
 
 type RoleServiceInterface interface {
