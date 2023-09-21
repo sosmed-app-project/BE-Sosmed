@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
-	"reflect"
 
 	"gorm.io/gorm"
 )
@@ -41,10 +40,8 @@ func (repo *UserQuery) GetAllManager() ([]users.UserCore, error) {
 
 // Insert implements users.UserDataInterface.
 func (repo *UserQuery) Insert(input users.UserCore) error {
-	fmt.Println("lead_id before mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	var userModel = UserCoreToModel(input)
-	fmt.Println("lead_id after mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
-	fmt.Println(userModel)
+	var userLead User
 
 	hass, errHass := helper.HassPassword(userModel.Password)
 	if errHass != nil {
@@ -52,6 +49,10 @@ func (repo *UserQuery) Insert(input users.UserCore) error {
 	}
 	userModel.Password = hass
 	fmt.Println(userModel)
+
+	repo.db.Where("id = ?", userModel.UserLeadID).First(&userLead)
+
+	userModel.DivisionID = userLead.DivisionID
 
 	tx := repo.db.Create(&userModel)
 	if tx.Error != nil {

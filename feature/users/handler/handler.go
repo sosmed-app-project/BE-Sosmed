@@ -8,7 +8,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -27,19 +26,18 @@ func New(service users.UserServiceInterface) *UserHandler {
 
 func (handler *UserHandler) Add(c echo.Context) error {
 	var input UserRequest
-	role_id := middleware.ExtractTokenUserRoleId(c)
-	if role_id != 1 && role_id != 2 {
+	roleId := middleware.ExtractTokenUserRoleId(c)
+	fmt.Println("role id nya adalah:", roleId)
+	if roleId == 4 {
 		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
 	}
 	errBind := c.Bind(&input)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid"+errBind.Error(), nil))
 	}
-	fmt.Println("lead_id before mapping to core:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
 
 	input.Password = "qwerty"
 	var userCore = UserRequestToCore(input)
-	fmt.Println("lead_id after mapping to core:", userCore.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	err := handler.userService.Add(userCore)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
@@ -67,6 +65,7 @@ func (handler *UserHandler) GetAll(c echo.Context) error {
 	}
 	search_name := c.QueryParam("searchName")
 	role_id := middleware.ExtractTokenUserRoleId(c)
+	fmt.Println("role id nya adalah:", role_id)
 	division_id := middleware.ExtractTokenUserDivisionId(c)
 	result, next, err := handler.userService.GetAll(role_id, division_id, uint(pageConv), uint(itemConv), search_name)
 	if err != nil {
@@ -112,7 +111,7 @@ func (handler *UserHandler) GetUserByID(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
 	}
 
-	if role_id == 3 || role_id == 4 {
+	if role_id == 4 {
 		if uint(idConv) != user_id {
 			return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
 		}
