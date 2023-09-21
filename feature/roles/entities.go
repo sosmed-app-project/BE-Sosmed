@@ -1,4 +1,4 @@
-package levels
+package roles
 
 import "time"
 
@@ -8,13 +8,10 @@ type RoleCore struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
-
 type RoleDataInterface interface {
-	SelectAll() ([]RoleCore, error)
-	UpdateById(id uint, input RoleCore) (RoleCore, error)
+	Read() ([]RoleCore, error)
 }
 
 type RoleServiceInterface interface {
-	GetAll() ([]RoleCore, error)
-	UpdateRoleById(ID uint, input RoleCore) (RoleCore, error)
+	GetAllRoles() ([]RoleCore, error)
 }

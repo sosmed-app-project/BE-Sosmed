@@ -8,6 +8,7 @@ import (
 )
 
 type LoginResponse struct {
+	ID       uint   `json:"id"`
 	Role     string `json:"role"`
 	Division string `json:"division"`
 	Token    string `json:"token"`
@@ -63,6 +64,12 @@ type UserEducationDataResponse struct {
 	Name         string `json:"name"`
 	StartYear    string `json:"star_year"`
 	GraduateYear string `json:"graduate_year"`
+}
+type ManagerResponse struct {
+	ID        uint
+	FirstName string
+	LastName  string
+	Division  string
 }
 
 func UserCoreToResponse(input users.UserCore) UserResponse {
@@ -139,4 +146,13 @@ func UserEduCoreToResponse(input []users.UserEducationData) []UserEducationDataR
 	}
 
 	return eduData
+}
+func UserCoreToManagerResponse(input users.UserCore) ManagerResponse {
+	var userMan = ManagerResponse{
+		ID:        input.ID,
+		FirstName: input.FirstName,
+		LastName:  input.LastName,
+		Division:  input.Division.Name,
+	}
+	return userMan
 }

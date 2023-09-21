@@ -21,8 +21,8 @@ type User struct {
 	Address      string                 `gorm:"column:address"`
 	ProfilePhoto string                 `gorm:"column:profile_photo"`
 	UserLeadID   uint                   `gorm:"column:user_lead_id"`
-	RoleID       *uint                  `gorm:"column:role_id"`
-	DivisionID   *uint                  `gorm:"column:division_id"`
+	RoleID       uint                   `gorm:"column:role_id"`
+	DivisionID   uint                   `gorm:"column:division_id"`
 	Role         roleModel.Role         `gorm:"foreignKey:RoleID"`
 	Division     divisionModel.Division `gorm:"foreignKey:DivisionID"`
 	UserImport   UserImportant          `gorm:"foreignKey:UserID"`
@@ -68,12 +68,12 @@ func UserCoreToModel(input users.UserCore) User {
 		LastName:     input.LastName,
 		Email:        input.Email,
 		PhoneNumber:  input.PhoneNumber,
-		Password:     input.Password,							
+		Password:     input.Password,
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
 		UserLeadID:   input.UserLeadID,
-		RoleID:       &input.RoleID,
-		DivisionID:   &input.DivisionID,
+		RoleID:       input.RoleID,
+		DivisionID:   input.DivisionID,
 		UserImport:   UserImportantCoreToModel(input.UserImport),
 		UserEdu:      UserEducationCoreToModel(input.UserEdu),
 		// UserLead:     UserLeadCoreToModel(input.UserLead),
@@ -135,8 +135,8 @@ func ModelToCore(input User) users.UserCore {
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
 		UserLeadID:   input.UserLeadID,
-		RoleID:       *input.RoleID,
-		DivisionID:   *input.DivisionID,
+		RoleID:       input.RoleID,
+		DivisionID:   input.DivisionID,
 		Role:         RoleModelToCore(input.Role),
 		Division:     DivisionModelToCore(input.Division),
 		UserImport:   UserImportModelToCore(input.UserImport),

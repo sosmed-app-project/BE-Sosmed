@@ -21,12 +21,29 @@ func New(db *gorm.DB) users.UserDataInterface {
 	}
 }
 
+// GetAllManager implements users.UserDataInterface.
+func (repo *UserQuery) GetAllManager() ([]users.UserCore, error) {
+	var userModel []User
+	tx := repo.db.Preload("Division").Where("role_id = 3").Find(&userModel)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return nil, errors.New("no row affected")
+	}
+	var userCore []users.UserCore
+	for _, value := range userModel {
+		var user = ModelToCore(value)
+		userCore = append(userCore, user)
+	}
+	return userCore, nil
+}
+
 // Insert implements users.UserDataInterface.
 func (repo *UserQuery) Insert(input users.UserCore) error {
 	fmt.Println("lead_id before mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	var userModel = UserCoreToModel(input)
-	fmt.Println("lead_id after mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
-	fmt.Println(userModel)
+	var userLead User
 
 	hass, errHass := helper.HassPassword(userModel.Password)
 	if errHass != nil {
@@ -34,6 +51,10 @@ func (repo *UserQuery) Insert(input users.UserCore) error {
 	}
 	userModel.Password = hass
 	fmt.Println(userModel)
+
+	repo.db.Where("id = ?", userModel.UserLeadID).First(&userLead)
+
+	userModel.DivisionID = userLead.DivisionID
 
 	tx := repo.db.Create(&userModel)
 	if tx.Error != nil {
@@ -52,7 +73,7 @@ func (repo *UserQuery) SelectById(id uint) (users.UserCore, error) {
 		return users.UserCore{}, tx.Error
 	}
 	if tx.RowsAffected == 0 {
-		return users.UserCore{}, errors.New("data not found")
+		return users.UserCore{}, errors.New("no row affected")
 	}
 
 	resultCore := ModelToCore(result)
@@ -71,36 +92,47 @@ func (repo *UserQuery) Delete(id uint) error {
 }
 
 // SelectAll implements users.UserDataInterface.
-func (repo *UserQuery) SelectAll(role_id uint, division_id uint) ([]users.UserCore, error) {
+func (repo *UserQuery) SelectAll(role_id uint, division_id, page, item uint, search_name string) ([]users.UserCore, int64, error) {
 	var userModel []User
-	// fmt.Println("divisi_id:", division_id)
+	var count int64
+	var tx *gorm.DB
+	var query = repo.db.Preload("Role").Preload("Division").Preload("UserImport")
+
 	if role_id == 3 || role_id == 4 {
-		tx := repo.db.Where("role_id in (3,4) and division_id = ?", division_id).Preload("Role").Preload("Division").Preload("UserImport").Find(&userModel)
-		if tx.Error != nil {
-			return nil, tx.Error
-		}
-		if tx.RowsAffected == 0 {
-			return nil, errors.New("no row affected")
-		}
+		query = query.Where("role_id in (3,4) and division_id = ?", division_id)
 	} else if role_id == 2 {
-		tx := repo.db.Where("role_id in (3,4)").Preload("Role").Preload("Division").Preload("UserImport").Find(&userModel)
-		if tx.Error != nil {
-			return nil, tx.Error
-		}
-		if tx.RowsAffected == 0 {
-			return nil, errors.New("no row affected")
-		}
+		query = query.Where("role_id in (3,4)")
 	} else if role_id == 1 {
-		tx := repo.db.Where("role_id in (1,2,3,4)").Preload("Role").Preload("Division").Preload("UserImport").Find(&userModel)
-		if tx.Error != nil {
-			return nil, tx.Error
-		}
-		if tx.RowsAffected == 0 {
-			return nil, errors.New("no row affected")
-		}
+		query = query.Where("role_id in (1,2,3,4)")
 	}
-	// fmt.Println("ini id lead:", userModel[0].UserLeadID)
-	// fmt.Println("ini id dari user lead:", userModel[0].UserLead.ID)
+
+	if search_name != "" {
+		query = query.Where("first_name like ? or last_name like ?", "%"+search_name+"%", "%"+search_name+"%")
+	}
+
+	queryCount := query
+	tx = queryCount.Find(&userModel)
+	if tx.Error != nil {
+		return nil, 0, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return nil, 0, errors.New("no row affected")
+	}
+	count = tx.RowsAffected
+
+	if page != 0 && item != 0 {
+		limit := item
+		offset := (page - 1) * item
+		query = query.Limit(int(limit)).Offset(int(offset))
+		fmt.Println(limit, offset)
+	}
+	tx = query.Find(&userModel)
+	if tx.Error != nil {
+		return nil, 0, tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return nil, 0, errors.New("no row affected")
+	}
 
 	var userCore []users.UserCore
 
@@ -109,13 +141,15 @@ func (repo *UserQuery) SelectAll(role_id uint, division_id uint) ([]users.UserCo
 		userCore = append(userCore, user)
 	}
 
-	return userCore, nil
+	return userCore, count, nil
 }
 
 // Update implements users.UserDataInterface.
 func (repo *UserQuery) Update(id uint, input users.UserCore) error {
 	var userModel = UserCoreToModel(input)
-	tx := repo.db.Model(&User{}).Where("id = ?", id).Updates(userModel)
+	fmt.Println(userModel.UserImport.EmergencyName)
+	fmt.Println(userModel.UserEdu[0].Name)
+	tx := repo.db.Session(&gorm.Session{FullSaveAssociations: true}).Model(&User{}).Where("id = ?", id).Updates(&userModel)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -138,7 +172,7 @@ func (repo *UserQuery) Login(email string, password string) (dataLogin users.Use
 		return users.UserCore{}, errors.New("password incorect")
 	}
 	if tx.RowsAffected == 0 {
-		return users.UserCore{}, errors.New("data not found")
+		return users.UserCore{}, errors.New("no row affected")
 	}
 	dataLogin = ModelToCore(data)
 	repo.dataLogin = dataLogin

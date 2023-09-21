@@ -1,32 +1,23 @@
 package service
 
 import (
-	levels "hris-app-golang/feature/roles"
+	"hris-app-golang/feature/roles"
 )
 
 type RoleService struct {
-	roleData levels.RoleDataInterface
+	roleData roles.RoleDataInterface
 }
 
-func New(repo levels.RoleDataInterface) levels.RoleServiceInterface {
+func NewRoleService(repo roles.RoleDataInterface) roles.RoleServiceInterface {
 	return &RoleService{
 		roleData: repo,
 	}
 }
 
-func (service *RoleService) GetAll() ([]levels.RoleCore, error) {
-	result, err := service.roleData.SelectAll()
+func (service *RoleService) GetAllRoles() ([]roles.RoleCore, error) {
+	result, err := service.roleData.Read()
 	if err != nil {
-		return []levels.RoleCore{}, err
+		return []roles.RoleCore{}, err
 	}
 	return result, err
-}
-
-func (service *RoleService) UpdateRoleById(ID uint, input levels.RoleCore) (levels.RoleCore, error) {
-
-	result, err := service.roleData.UpdateById(ID, input)
-	if err != nil {
-		return levels.RoleCore{}, err
-	}
-	return result, nil
 }

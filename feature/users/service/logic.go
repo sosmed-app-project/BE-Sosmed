@@ -15,6 +15,12 @@ func New(repo users.UserDataInterface) users.UserServiceInterface {
 	}
 }
 
+// GetAllManager implements users.UserServiceInterface.
+func (service *UserService) GetAllManager() ([]users.UserCore, error) {
+	result, err := service.userData.GetAllManager()
+	return result, err
+}
+
 // Add implements users.UserServiceInterface.
 func (service *UserService) Add(input users.UserCore) error {
 	err := service.userData.Insert(input)
@@ -22,9 +28,22 @@ func (service *UserService) Add(input users.UserCore) error {
 }
 
 // GetAll implements users.UserServiceInterface.
-func (service *UserService) GetAll(role_id uint, division_id uint) ([]users.UserCore, error) {
-	result, err := service.userData.SelectAll(role_id, division_id)
-	return result, err
+func (service *UserService) GetAll(role_id, division_id, page, item uint, search_name string) ([]users.UserCore, bool, error) {
+	result, count, err := service.userData.SelectAll(role_id, division_id, page, item, search_name)
+
+	next := true
+	var pages int64
+	if item != 0 {
+		pages = count / int64(item)
+		if count%int64(item) != 0 {
+			pages += 1
+		}
+		if page == uint(pages) {
+			next = false
+		}
+	}
+
+	return result, next, err
 }
 
 // Update implements users.UserServiceInterface.

@@ -1,7 +1,7 @@
 package handler
 
 import (
-	levels "hris-app-golang/feature/roles"
+	"hris-app-golang/feature/roles"
 )
 
 type RoleResponseAll struct {
@@ -14,7 +14,7 @@ type RoleResponse struct {
 	Name string `json:"name"`
 }
 
-func RoleCoreToResponseAll(input levels.RoleCore) RoleResponseAll {
+func RoleCoreToResponseAll(input roles.RoleCore) RoleResponseAll {
 	var roleResp = RoleResponseAll{
 		ID:   input.ID,
 		Name: input.Name,
