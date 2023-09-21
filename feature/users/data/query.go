@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
-	"reflect"
+	"mime/multipart"
 
 	"gorm.io/gorm"
 )
@@ -40,8 +40,7 @@ func (repo *UserQuery) GetAllManager() ([]users.UserCore, error) {
 }
 
 // Insert implements users.UserDataInterface.
-func (repo *UserQuery) Insert(input users.UserCore) error {
-	fmt.Println("lead_id before mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
+func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, header *multipart.FileHeader) error {
 	var userModel = UserCoreToModel(input)
 	var userLead User
 
@@ -50,11 +49,21 @@ func (repo *UserQuery) Insert(input users.UserCore) error {
 		return errHass
 	}
 	userModel.Password = hass
-	fmt.Println(userModel)
+	if userModel.RoleID == 1 {
+		userModel.DivisionID = 1
+	} else if userModel.RoleID == 2 {
+		userModel.DivisionID = 2
+	} else {
+		repo.db.Where("id = ?", userModel.UserLeadID).First(&userLead)
+		userModel.DivisionID = userLead.DivisionID
+	}
 
-	repo.db.Where("id = ?", userModel.UserLeadID).First(&userLead)
+	nameGen, errGen := helper.GenerateName()
+	if errGen != nil {
+		return errGen
+	}
 
-	userModel.DivisionID = userLead.DivisionID
+	userModel.ProfilePhoto = nameGen + header.Filename
 
 	tx := repo.db.Create(&userModel)
 	if tx.Error != nil {
@@ -62,6 +71,11 @@ func (repo *UserQuery) Insert(input users.UserCore) error {
 	}
 	if tx.RowsAffected == 0 {
 		return errors.New("no row affected")
+	}
+	errUp := helper.Uploader.UploadFile(file, userModel.ProfilePhoto)
+
+	if errUp != nil {
+		return errUp
 	}
 	return nil
 }
@@ -206,7 +220,7 @@ func (repo *UserQuery) CountMaleUsers() (uint, error) {
 	if tx.Error != nil {
 		return 0, tx.Error
 	}
-	return uint (maleUserCount), nil
+	return uint(maleUserCount), nil
 }
 
 // CountFemaleUsers menghitung jumlah user perempuan berdasarkan gender=perempuan.
@@ -216,5 +230,5 @@ func (repo *UserQuery) CountFemaleUsers() (uint, error) {
 	if tx.Error != nil {
 		return 0, tx.Error
 	}
-	return uint(femaleUserCount), nil 
+	return uint(femaleUserCount), nil
 }

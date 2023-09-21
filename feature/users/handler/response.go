@@ -31,6 +31,7 @@ type UserResponse struct {
 	LastName      string                      `json:"last_name"`
 	Email         string                      `json:"email"`
 	PhoneNumber   string                      `json:"phone_number"`
+	ProfilePhoto  string                      `json:"profile_photo"`
 	Address       string                      `json:"address"`
 	UserLeadID    uint                        `json:"user_lead_id"`
 	RoleID        uint                        `json:"role_id"`
@@ -72,6 +73,8 @@ type ManagerResponse struct {
 	Division  string
 }
 
+const profile = "https://storage.cloud.google.com/hris_app_bucket/profile-photo/"
+
 func UserCoreToResponse(input users.UserCore) UserResponse {
 	var resultResponse = UserResponse{
 		ID:            input.ID,
@@ -79,6 +82,7 @@ func UserCoreToResponse(input users.UserCore) UserResponse {
 		LastName:      input.LastName,
 		Email:         input.Email,
 		PhoneNumber:   input.PhoneNumber,
+		ProfilePhoto:  profile + input.ProfilePhoto,
 		Address:       input.Address,
 		UserLeadID:    input.UserLeadID,
 		RoleID:        input.RoleID,

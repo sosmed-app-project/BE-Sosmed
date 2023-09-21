@@ -5,10 +5,7 @@ import (
 	middleware "hris-app-golang/app/middlewares"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
-	"io"
 	"net/http"
-	"os"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -32,15 +29,31 @@ func (handler *UserHandler) Add(c echo.Context) error {
 	if roleId == 4 {
 		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
 	}
+	if roleId == 3 && (input.RoleID == 1 || input.RoleID == 2 || input.RoleID == 3) {
+		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
+	}
+	if roleId == 2 && (input.RoleID == 1 || input.RoleID == 2) {
+		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
+	}
 	errBind := c.Bind(&input)
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid"+errBind.Error(), nil))
 	}
 
+	file, header, errFile := c.Request().FormFile("profile_photo")
+	if errFile != nil {
+		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid"+errBind.Error(), nil))
+	}
+
+	// errUp := helper.Uploader.UploadFile(file, header.Filename)
+
+	// if errUp != nil {
+	// 	return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
+	// }
+
 	input.Password = "qwerty"
 	var userCore = UserRequestToCore(input)
-	fmt.Println("lead_id after mapping to core:", userCore.UserLeadID, reflect.TypeOf(input.UserLeadID))
-	err := handler.userService.Add(userCore)
+	err := handler.userService.Add(userCore, file, header)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
 	}
@@ -65,6 +78,7 @@ func (handler *UserHandler) GetAll(c echo.Context) error {
 			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
 		}
 	}
+
 	search_name := c.QueryParam("searchName")
 	role_id := middleware.ExtractTokenUserRoleId(c)
 	fmt.Println("role id nya adalah:", role_id)
@@ -196,39 +210,6 @@ func (handler *UserHandler) GetAllManager(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", userResp))
 }
-
-func Upload(c echo.Context) error {
-
-	//-----------
-	// Read file
-	//-----------
-
-	// Source
-	file, err := c.FormFile("file")
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error upload "+err.Error(), nil))
-	}
-	src, err := file.Open()
-	if err != nil {
-		return err
-	}
-	defer src.Close()
-
-	// Destination
-	dst, err := os.Create("files/" + file.Filename)
-	if err != nil {
-		return err
-	}
-	defer dst.Close()
-
-	// Copy
-	if _, err = io.Copy(dst, src); err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success upload file", nil))
-}
-
 
 func (handler *UserHandler) GetEmployeeCount(c echo.Context) error {
 	employeeCount, err := handler.userService.CountEmployees()

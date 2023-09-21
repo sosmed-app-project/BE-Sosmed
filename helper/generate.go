@@ -2,9 +2,9 @@ package helper
 
 import gonanoid "github.com/matoous/go-nanoid"
 
-func GenerateId() (string, error) {
+func GenerateName() (string, error) {
 	var str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	newid, errID := gonanoid.Generate(str, 20)
+	newid, errID := gonanoid.Generate(str, 30)
 	if errID != nil {
 		return "", errID
 	}

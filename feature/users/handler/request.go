@@ -5,18 +5,18 @@ import (
 )
 
 type UserRequest struct {
-	FirstName    string                 `json:"first_name" form:"first_name"`
-	LastName     string                 `json:"last_name" form:"last_name"`
-	Email        string                 `json:"email" form:"email"`
-	PhoneNumber  string                 `json:"phone_number" form:"phone_number"`
-	Password     string                 `json:"password" form:"password"`
-	Address      string                 `json:"address" form:"address"`
-	ProfilePhoto string                 `json:"profile_photo" form:"profile_photo"`
-	UserLeadID   uint                   `json:"user_lead_id" form:"user_lead_id"`
-	RoleID       uint                   `json:"role_id" form:"role_id"`
-	DivisionID   uint                   `json:"division_id" form:"division_id"`
-	UserImport   UserImportantRequest   `json:"user_important_data" form:"user_important_data"`
-	UserEdu      []UserEducationRequest `json:"user_education_data" form:"user_education_data"`
+	FirstName   string                 `json:"first_name" form:"first_name"`
+	LastName    string                 `json:"last_name" form:"last_name"`
+	Email       string                 `json:"email" form:"email"`
+	PhoneNumber string                 `json:"phone_number" form:"phone_number"`
+	Password    string                 `json:"password" form:"password"`
+	Address     string                 `json:"address" form:"address"`
+	UserLeadID  uint                   `json:"user_lead_id" form:"user_lead_id"`
+	RoleID      uint                   `json:"role_id" form:"role_id"`
+	DivisionID  uint                   `json:"division_id" form:"division_id"`
+	UserImport  UserImportantRequest   `json:"user_important_data" form:"user_important_data"`
+	UserEdu     []UserEducationRequest `json:"user_education_data" form:"user_education_data"`
+	// ProfilePhoto string                 `json:"profile_photo" form:"profile_photo"`
 }
 
 type UserImportantRequest struct {
@@ -39,18 +39,18 @@ type UserEducationRequest struct {
 
 func UserRequestToCore(input UserRequest) users.UserCore {
 	var userCore = users.UserCore{
-		FirstName:    input.FirstName,
-		LastName:     input.LastName,
-		Email:        input.Email,
-		PhoneNumber:  input.PhoneNumber,
-		Password:     input.Password,
-		Address:      input.Address,
-		ProfilePhoto: input.ProfilePhoto,
-		UserLeadID:   input.UserLeadID,
-		RoleID:       input.RoleID,
-		DivisionID:   input.DivisionID,
-		UserImport:   UserImportantRequestToCore(input.UserImport),
-		UserEdu:      UserEducationRequestToCore(input.UserEdu),
+		FirstName:   input.FirstName,
+		LastName:    input.LastName,
+		Email:       input.Email,
+		PhoneNumber: input.PhoneNumber,
+		Password:    input.Password,
+		Address:     input.Address,
+		UserLeadID:  input.UserLeadID,
+		RoleID:      input.RoleID,
+		DivisionID:  input.DivisionID,
+		UserImport:  UserImportantRequestToCore(input.UserImport),
+		UserEdu:     UserEducationRequestToCore(input.UserEdu),
+		// ProfilePhoto: input.ProfilePhoto,
 	}
 	return userCore
 }

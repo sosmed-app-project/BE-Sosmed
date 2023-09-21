@@ -3,6 +3,7 @@ package users
 import (
 	divisionCore "hris-app-golang/feature/divisions"
 	roleCore "hris-app-golang/feature/roles"
+	"mime/multipart"
 	"time"
 )
 
@@ -54,7 +55,7 @@ type UserEducationData struct {
 }
 
 type UserDataInterface interface {
-	Insert(input UserCore) error
+	Insert(input UserCore, file multipart.File, header *multipart.FileHeader) error
 	SelectAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, int64, error)
 	SelectById(id uint) (UserCore, error)
 	Update(id uint, input UserCore) error
@@ -69,7 +70,7 @@ type UserDataInterface interface {
 }
 
 type UserServiceInterface interface {
-	Add(input UserCore) error
+	Add(input UserCore, file multipart.File, header *multipart.FileHeader) error
 	GetAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, bool, error)
 	GetById(id uint) (UserCore, error)
 	Update(id uint, input UserCore) error
