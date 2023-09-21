@@ -2,6 +2,8 @@ package router
 
 import (
 	middlewares "hris-app-golang/app/middlewares"
+	"hris-app-golang/helper"
+	"net/http"
 
 	_divisionData "hris-app-golang/feature/divisions/data"
 	_divisionHandler "hris-app-golang/feature/divisions/handler"
@@ -45,4 +47,18 @@ func InitRouter(db *gorm.DB, c *echo.Echo) {
 	c.GET("/roles", RoleHandlerAPI.GetAllRoles)
 
 	c.GET("/divisions", DivisionHandlerAPI.GetAllDivisions)
+
+	c.POST("/upload", func(c echo.Context) error {
+
+		file, header, err := c.Request().FormFile("file")
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "error bind data")
+		}
+		// fmt.Println("nama: ", header.Filename)
+		errUp := helper.Uploader.UploadFile(file, header.Filename)
+		if errUp != nil {
+			return c.JSON(http.StatusInternalServerError, "error upload "+errUp.Error())
+		}
+		return c.JSON(http.StatusOK, "success")
+	})
 }

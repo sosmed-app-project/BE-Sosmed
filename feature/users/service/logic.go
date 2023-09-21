@@ -3,6 +3,7 @@ package service
 import (
 	middlewares "hris-app-golang/app/middlewares"
 	"hris-app-golang/feature/users"
+	"mime/multipart"
 )
 
 type UserService struct {
@@ -22,8 +23,8 @@ func (service *UserService) GetAllManager() ([]users.UserCore, error) {
 }
 
 // Add implements users.UserServiceInterface.
-func (service *UserService) Add(input users.UserCore) error {
-	err := service.userData.Insert(input)
+func (service *UserService) Add(input users.UserCore, file multipart.File, header *multipart.FileHeader) error {
+	err := service.userData.Insert(input, file, header)
 	return err
 }
 
