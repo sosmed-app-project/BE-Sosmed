@@ -238,6 +238,8 @@ paths:
           in: path
           schema:
             type: number
+<<<<<<< HEAD
+=======
         - name: page
           description: "curren page"
           required: false
@@ -256,6 +258,7 @@ paths:
           in: query
           schema:
             type: number
+>>>>>>> 733eb7e6fd897a6985a8ae68cc6ff0cd9faffb05
       responses:
         "200":
           description: success
@@ -560,6 +563,10 @@ components:
               "data":
                 type: object
                 example: null
+<<<<<<< HEAD
+
+=======
+>>>>>>> 733eb7e6fd897a6985a8ae68cc6ff0cd9faffb05
     responseCreated:
       description: success
       content:

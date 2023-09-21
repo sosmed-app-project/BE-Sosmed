@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
+	"reflect"
 
 	"gorm.io/gorm"
 )
@@ -40,6 +41,7 @@ func (repo *UserQuery) GetAllManager() ([]users.UserCore, error) {
 
 // Insert implements users.UserDataInterface.
 func (repo *UserQuery) Insert(input users.UserCore) error {
+	fmt.Println("lead_id before mapping to model:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	var userModel = UserCoreToModel(input)
 	var userLead User
 

@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -38,6 +39,7 @@ func (handler *UserHandler) Add(c echo.Context) error {
 
 	input.Password = "qwerty"
 	var userCore = UserRequestToCore(input)
+	fmt.Println("lead_id after mapping to core:", userCore.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	err := handler.userService.Add(userCore)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
@@ -172,7 +174,6 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
-
 	var response = LoginResponse{
 		ID:       dataLogin.ID,
 		Role:     dataLogin.Role.Name,
