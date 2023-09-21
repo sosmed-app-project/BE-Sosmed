@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Load GCP Credentials
+        shell: bash
+        env:
+          GCP: ${{ secrets.GCP }}
+        run: |
+          echo "$GCP" > keys.json
+          
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -32,13 +39,6 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/hris_app:latest
-
-      - name: Load GCP Credentials
-        shell: bash
-        env:
-          GCP: ${{ secrets.GCP }}
-        run: |
-          echo "$GCP" > keys.json
 
       - name: Connect to server using SSH
         uses: appleboy/ssh-action@v0.1.10
