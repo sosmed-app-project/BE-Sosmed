@@ -91,6 +91,13 @@ func UserCoreToResponse(input users.UserCore) UserResponse {
 	return resultResponse
 }
 
+type DashboardResponse struct {
+	EmployeeCount   uint `json:"employee_count"`
+	ManagerCount    uint `json:"manager_count"`
+	MaleUserCount   uint `json:"male_user_count"`
+	FemaleUserCount uint `json:"female_user_count"`
+}
+
 func UserCoreToResponseAll(input users.UserCore) UserResponseAll {
 	var userResp = UserResponseAll{
 		ID:        input.ID,

@@ -45,4 +45,10 @@ func InitRouter(db *gorm.DB, c *echo.Echo) {
 	c.GET("/roles", RoleHandlerAPI.GetAllRoles)
 
 	c.GET("/divisions", DivisionHandlerAPI.GetAllDivisions)
+
+	c.GET("/dashboard/jumlahemployee", UserHandlerAPI.GetEmployeeCount, middlewares.JWTMiddleware())
+	c.GET("/dashboard/jumlahmanager", UserHandlerAPI.GetManagerCount, middlewares.JWTMiddleware())
+	c.GET("/dashboard/jumlahmale_users", UserHandlerAPI.GetMaleUserCount, middlewares.JWTMiddleware())
+	c.GET("/dashboard/jumlahfemale_users", UserHandlerAPI.GetFemaleUserCount, middlewares.JWTMiddleware())
+
 }

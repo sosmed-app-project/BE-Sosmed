@@ -228,3 +228,56 @@ func Upload(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success upload file", nil))
 }
+
+
+func (handler *UserHandler) GetEmployeeCount(c echo.Context) error {
+	employeeCount, err := handler.userService.CountEmployees()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting employee count", nil))
+	}
+
+	response := DashboardResponse{
+		EmployeeCount: employeeCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
+
+func (handler *UserHandler) GetManagerCount(c echo.Context) error {
+	managerCount, err := handler.userService.CountManagers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting manager count", nil))
+	}
+
+	response := DashboardResponse{
+		ManagerCount: managerCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
+
+func (handler *UserHandler) GetMaleUserCount(c echo.Context) error {
+	maleUserCount, err := handler.userService.CountMaleUsers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting male user count", nil))
+	}
+
+	response := DashboardResponse{
+		MaleUserCount: maleUserCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
+
+func (handler *UserHandler) GetFemaleUserCount(c echo.Context) error {
+	femaleUserCount, err := handler.userService.CountFemaleUsers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting female user count", nil))
+	}
+
+	response := DashboardResponse{
+		FemaleUserCount: femaleUserCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
