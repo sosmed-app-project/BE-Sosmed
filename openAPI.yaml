@@ -1,13 +1,15 @@
-openapi: '3.0.2'
-info:
-  title: API HRIS-APP-Immersive
-  description: The documentation of endpoints for HRIS-APP team 2
-  version: 1.0.0
+openapi: 3.0.0
 servers:
   # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/ilham9d27/1.0.2
-  - url: https://api.server.test/v1
+    url: https://virtserver.swaggerhub.com/ILHAM9D27_1/HRIS-APP-Team-2/1.0.0
+info:
+  description: This is a simple API
+  version: "1.0.0"
+  title: Simple HRIS API
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 tags:
   - name: Auth
   - name: Users
@@ -229,6 +231,13 @@ paths:
         - Users
       summary: get specific user data
       description: get specific user data using user id
+      parameters:
+        - name: user_id
+          description: "identifier user"
+          required: true
+          in: path
+          schema:
+            type: number
       responses:
         "200":
           description: success
@@ -297,6 +306,13 @@ paths:
         - Users
       summary: add new user
       description: this endpoint to add new user by sending all information require
+      parameters:
+        - name: user_id
+          description: "identifier user"
+          required: true
+          in: path
+          schema:
+            type: number
       requestBody:
         required: true
         content:
@@ -391,13 +407,142 @@ paths:
         "400":
           $ref: "#/components/responses/responseBadRequest"
         "500":
-          $ref: "#/components/responses/responseInternalError"               
+          $ref: "#/components/responses/responseInternalError"
 
+    delete:
+      tags:
+        - Users
+      summary: delete user
+      description: this endpoint to delete user by id using param
+      parameters:
+        - name: user_id
+          description: "identifier user"
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          $ref: "#/components/responses/responseSuccess"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+
+
+  /roles:
+    get:
+      tags:
+        - Roles
+      summary: get all roles
+      description: this endpoint to get all roles data
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "code":
+                    type: integer
+                    format: int64
+                    example: 200
+                  "message":
+                    type: string
+                    example: success
+                  "data":
+                    type: array
+                    items:
+                      properties:
+                        "id":
+                          type: integer
+                          format: int64
+                        "name":
+                          type: string
+                    example:
+                      - id: 1
+                        name: Superadmin
+                      - id: 2
+                        name: Admin
+                      - id: 3
+                        name: Manager
+                      - id: 4
+                        name: Employee
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+                  
+  /divisions:
+    get:
+      tags:
+        - Divisions
+      summary: get all divisions
+      description: this endpoint to get all divisions data
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  "code":
+                    type: integer
+                    format: int64
+                    example: 200
+                  "message":
+                    type: string
+                    example: success
+                  "data":
+                    type: array
+                    items:
+                      properties:
+                        "id":
+                          type: integer
+                          format: int64
+                        "name":
+                          type: string
+                    example:
+                      - id: 1
+                        name: General Division
+                      - id: 2
+                        name: Human Resource
+                      - id: 3
+                        name: Information Technology
+                      - id: 4
+                        name: Marketing
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+        
 components:
   responses:
     #########################
     ### general responses ###
     #########################
+    responseSuccess:
+      description: success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              "code":
+                type: integer
+                format: int64
+                example: 200
+              "message":
+                type: string
+                example: success
+              "data":
+                type: object
+                example: null
+
     responseCreated:
       description: success
       content:

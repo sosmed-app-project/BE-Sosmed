@@ -20,31 +20,20 @@ func New(service levels.RoleServiceInterface) *RoleHandler {
 	}
 }
 
-func (handler *RoleHandler) GetAll(c echo.Context) error {
-	roleIDStr := c.QueryParam("id")
-	roleName := c.QueryParam("name")
-
-	var roleID uint
-	if roleIDStr != "" {
-		id, err := strconv.ParseUint(roleIDStr, 10, 32)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "Invalid id parameter", nil))
-		}
-		roleID = uint(id)
-	}
-
-	result, err := handler.roleService.GetAll(roleID, roleName)
+func (handler *RoleHandler) GetAllRole(c echo.Context) error {
+	result, err := handler.roleService.GetAll()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "Operation failed, internal server error", nil))
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error read data", nil))
 	}
-
-	var roleResp []RoleResponseAll
+	var roleResponse []RoleResponse
 	for _, value := range result {
-		var role = RoleCoreToResponseAll(value)
-		roleResp = append(roleResp, role)
-	}
+		roleResponse = append(roleResponse, RoleResponse{
+			ID:   value.ID,
+			Name: value.Name,
+		})
 
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "Success", roleResp))
+	}
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success read data", roleResponse))
 }
 
 func (handler *RoleHandler) UpdateById(c echo.Context) error {

@@ -16,31 +16,15 @@ func New(db *gorm.DB) levels.RoleDataInterface {
 	}
 }
 
-func (repo *RoleQuery) SelectAll(ID uint, Name string) ([]levels.RoleCore, error) {
+func (repo *RoleQuery) SelectAll() ([]levels.RoleCore, error) {
 
-	var roleData []Role
-	var tx *gorm.DB
-
-	if ID != 0 {
-		tx = repo.db.Where("id = ?", ID).Find(&roleData)
-	} else {
-		tx = repo.db.Find(&roleData)
-	}
+	var rolesData []Role
+	tx := repo.db.Find(&rolesData)
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-
-	if Name != "" {
-		tx = repo.db.Where("name = ?", Name).Find(&roleData)
-	} else {
-		tx = repo.db.Find(&roleData)
-	}
-	if tx.Error != nil {
-		return nil, tx.Error
-	}
-
 	var rolesCore []levels.RoleCore
-	for _, value := range roleData {
+	for _, value := range rolesData {
 		rolesCore = append(rolesCore, levels.RoleCore{
 			ID:   value.ID,
 			Name: value.Name,

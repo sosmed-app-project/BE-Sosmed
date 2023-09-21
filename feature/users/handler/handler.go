@@ -1,10 +1,12 @@
 package handler
 
 import (
+	"fmt"
 	middleware "hris-app-golang/app/middlewares"
 	"hris-app-golang/feature/users"
 	"hris-app-golang/helper"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 
@@ -28,7 +30,7 @@ func (handler *UserHandler) Add(c echo.Context) error {
 	if errBind != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid"+errBind.Error(), nil))
 	}
-
+	fmt.Println("lead_id before mapping to core:", input.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	// if role_id == "2" {
 	// 	if input.RoleID == "1" || input.RoleID == "2" {
 	// 		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
@@ -37,6 +39,7 @@ func (handler *UserHandler) Add(c echo.Context) error {
 
 	input.Password = "qwerty"
 	var userCore = UserRequestToCore(input)
+	fmt.Println("lead_id after mapping to core:", userCore.UserLeadID, reflect.TypeOf(input.UserLeadID))
 	err := handler.userService.Add(userCore)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
@@ -78,70 +81,37 @@ func (handler *UserHandler) Update(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", nil))
 }
 
-/*
-	func (handler *UserHandler) Login(c echo.Context) error {
-		var input UserRequest
-		errBind := c.Bind(&input)
-		if errBind != nil {
-			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
-		}
-		var inputCore = UserRequestToCore(input)
-		result, token, err := handler.userService.Login(inputCore.Email, inputCore.Password)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
-		}
-		dataResponse := LoginResponse{
-			Role:     result.Role.Name,
-			Division: result.Division.Name,
-			Token:    token,
-		}
-		return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", dataResponse))
-	}
-*/
-
 func (handler *UserHandler) GetUserByID(c echo.Context) error {
 	id := c.Param("user_id")
+	role_id := middleware.ExtractTokenUserRoleId(c)
+	user_id := middleware.ExtractTokenUserId(c)
+
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
 	}
+
+	if role_id == 3 || role_id == 4 {
+		if uint(idConv) != user_id {
+			return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "operation failed, request resource not allowed", nil))
+		}
+	}
+
 	result, err := handler.userService.GetById(uint(idConv))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Id Harus berupa string")
 	}
 
-	resultDivision := DivisionResponse{
-		ID:   result.Division.ID,
-		Name: result.Division.Name,
-	}
-
-	resultRole := RoleResponse{
-		ID:   result.Role.ID,
-		Name: result.Role.Name,
-	}
-
-	resultImportantData := UserImportantDataResponse{
-		ID:          result.UserImport.UserID,
-		Birth_Place: result.UserImport.BirthPlace,
-		Birth_Date:  result.UserImport.BirthDate,
-		Religion:    result.UserImport.Religion,
-	}
-
-	resultResponse := UserResponse{
-		ID:                  result.ID,
-		First_Name:          result.FirstName,
-		Email:               result.Email,
-		Phone_Number:        result.PhoneNumber,
-		Address:             result.Address,
-		Division:            resultDivision,
-		Role:                resultRole,
-		User_Important_Data: resultImportantData,
-	}
+	resultResponse := UserCoreToResponse(result)
 
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "Success get user data", resultResponse))
 }
 
 func (handler *UserHandler) DeleteUser(c echo.Context) error {
+	role_id := middleware.ExtractTokenUserRoleId(c)
+	if role_id != 2 && role_id != 1 {
+		return c.JSON(http.StatusUnauthorized, helper.WebResponse(http.StatusUnauthorized, "opeartion failed, request resource not allowed", nil))
+	}
 	id := c.Param("user_id")
 	idConv, errConv := strconv.Atoi(id)
 	if errConv != nil {
@@ -150,6 +120,9 @@ func (handler *UserHandler) DeleteUser(c echo.Context) error {
 
 	err := handler.userService.Delete(uint(idConv))
 	if err != nil {
+		if strings.Contains(err.Error(), "no row affected") {
+			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "error delete data, data not found", nil))
+		}
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error delete data", nil))
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success delete data", nil))
@@ -170,12 +143,6 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
-	// response := map[string]any{
-	// 	"token": token,
-	// 	"role":  dataLogin.Role,
-	// 	"id":    dataLogin.ID,
-	// 	"email": dataLogin.Email,
-	// }
 	var response = LoginResponse{
 		Role:     dataLogin.Role.Name,
 		Division: dataLogin.Division.Name,

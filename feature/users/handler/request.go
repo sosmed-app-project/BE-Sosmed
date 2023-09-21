@@ -2,7 +2,6 @@ package handler
 
 import (
 	"hris-app-golang/feature/users"
-	"time"
 )
 
 type UserRequest struct {
@@ -21,15 +20,15 @@ type UserRequest struct {
 }
 
 type UserImportantRequest struct {
-	BirthPlace      string    `json:"birth_place" form:"birth_place"`
-	BirthDate       time.Time `json:"birth_date" form:"birth_date"`
-	EmergencyName   string    `json:"emergency_name" form:"emergency_name"`
-	EmergencyStatus string    `json:"emergency_status" form:"emergency_status"`
-	EmergencyPhone  string    `json:"emergency_phone" form:"emergency_phone"`
-	Npwp            string    `json:"npwp" form:"npwp"`
-	Bpjs            string    `json:"bpjs" form:"bpjs"`
-	Religion        string    `json:"religion" form:"religion"`
-	Gender          string    `json:"gender" form:"gender"`
+	BirthPlace      string `json:"birth_place" form:"birth_place"`
+	BirthDate       string `json:"birth_date" form:"birth_date"`
+	EmergencyName   string `json:"emergency_name" form:"emergency_name"`
+	EmergencyStatus string `json:"emergency_status" form:"emergency_status"`
+	EmergencyPhone  string `json:"emergency_phone" form:"emergency_phone"`
+	Npwp            string `json:"npwp" form:"npwp"`
+	Bpjs            string `json:"bpjs" form:"bpjs"`
+	Religion        string `json:"religion" form:"religion"`
+	Gender          string `json:"gender" form:"gender"`
 }
 
 type UserEducationRequest struct {
@@ -47,7 +46,7 @@ func UserRequestToCore(input UserRequest) users.UserCore {
 		Password:     input.Password,
 		Address:      input.Address,
 		ProfilePhoto: input.ProfilePhoto,
-		UserLeadID:   &input.UserLeadID,
+		UserLeadID:   input.UserLeadID,
 		RoleID:       input.RoleID,
 		DivisionID:   input.DivisionID,
 		UserImport:   UserImportantRequestToCore(input.UserImport),

@@ -25,15 +25,19 @@ type UserResponseAll struct {
 }
 
 type UserResponse struct {
-	ID                  uint                      `json:"id"`
-	First_Name          string                    `json:"first_name"`
-	Last_Name           string                    `json:"last_name"`
-	Email               string                    `json:"email"`
-	Phone_Number        string                    `json:"phone_number"`
-	Address             string                    `json:"address"`
-	Division            DivisionResponse          `json:"division"`
-	Role                RoleResponse              `json:"role"`
-	User_Important_Data UserImportantDataResponse `json:"user_important_data"`
+	ID            uint                        `json:"id"`
+	FirstName     string                      `json:"first_name"`
+	LastName      string                      `json:"last_name"`
+	Email         string                      `json:"email"`
+	PhoneNumber   string                      `json:"phone_number"`
+	Address       string                      `json:"address"`
+	UserLeadID    uint                        `json:"user_lead_id"`
+	RoleID        uint                        `json:"role_id"`
+	DivisionID    uint                        `json:"division_id"`
+	Division      DivisionResponse            `json:"division"`
+	Role          RoleResponse                `json:"role"`
+	UserImportant UserImportantDataResponse   `json:"user_important_data"`
+	UserEdu       []UserEducationDataResponse `json:"user_education_data"`
 }
 
 type DivisionResponse struct {
@@ -47,10 +51,37 @@ type RoleResponse struct {
 }
 
 type UserImportantDataResponse struct {
-	ID          uint      `json:"id"`
-	Birth_Place string    `json:"birth_place"`
-	Birth_Date  time.Time `json:"birth_date"`
-	Religion    string    `json:"Religion"`
+	ID          uint   `json:"id"`
+	Birth_Place string `json:"birth_place"`
+	Birth_Date  string `json:"birth_date"`
+	Religion    string `json:"Religion"`
+}
+
+type UserEducationDataResponse struct {
+	ID           uint   `json:"id"`
+	UserID       uint   `json:"user_id"`
+	Name         string `json:"name"`
+	StartYear    string `json:"star_year"`
+	GraduateYear string `json:"graduate_year"`
+}
+
+func UserCoreToResponse(input users.UserCore) UserResponse {
+	var resultResponse = UserResponse{
+		ID:            input.ID,
+		FirstName:     input.FirstName,
+		LastName:      input.LastName,
+		Email:         input.Email,
+		PhoneNumber:   input.PhoneNumber,
+		Address:       input.Address,
+		UserLeadID:    input.UserLeadID,
+		RoleID:        input.RoleID,
+		DivisionID:    input.DivisionID,
+		Division:      DivisionCoreToResponse(input.Division),
+		Role:          RoleCoreToResp(input.Role),
+		UserImportant: UserImportCoreToResponse(input.UserImport),
+		UserEdu:       UserEduCoreToResponse(input.UserEdu),
+	}
+	return resultResponse
 }
 
 func UserCoreToResponseAll(input users.UserCore) UserResponseAll {
@@ -81,4 +112,31 @@ func RoleCoreToResp(input roles.RoleCore) RoleResponse {
 		Name: input.Name,
 	}
 	return role
+}
+
+func UserImportCoreToResponse(input users.UserImportantData) UserImportantDataResponse {
+	var resp = UserImportantDataResponse{
+		ID:          input.ID,
+		Birth_Place: input.BirthPlace,
+		Birth_Date:  input.BirthDate,
+		Religion:    input.Religion,
+	}
+	return resp
+}
+
+func UserEduCoreToResponse(input []users.UserEducationData) []UserEducationDataResponse {
+	var eduData []UserEducationDataResponse
+
+	for _, val := range input {
+		var EduRes = UserEducationDataResponse{
+			ID:           val.ID,
+			UserID:       val.UserID,
+			Name:         val.Name,
+			StartYear:    val.StartYear,
+			GraduateYear: val.StartYear,
+		}
+		eduData = append(eduData, EduRes)
+	}
+
+	return eduData
 }

@@ -10,11 +10,11 @@ type RoleCore struct {
 }
 
 type RoleDataInterface interface {
-	SelectAll(ID uint, Name string) ([]RoleCore, error)
+	SelectAll() ([]RoleCore, error)
 	UpdateById(id uint, input RoleCore) (RoleCore, error)
 }
 
 type RoleServiceInterface interface {
-	GetAll(ID uint, Name string) ([]RoleCore, error)
+	GetAll() ([]RoleCore, error)
 	UpdateRoleById(ID uint, input RoleCore) (RoleCore, error)
 }
