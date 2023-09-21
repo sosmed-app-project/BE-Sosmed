@@ -26,15 +26,20 @@ type UserResponseAll struct {
 }
 
 type UserResponse struct {
-	ID            uint                      `json:"id"`
-	FirstName     string                    `json:"first_name"`
-	LastName      string                    `json:"last_name"`
-	Email         string                    `json:"email"`
-	PhoneNumber   string                    `json:"phone_number"`
-	Address       string                    `json:"address"`
-	Division      DivisionResponse          `json:"division"`
-	Role          RoleResponse              `json:"role"`
-	UserImportant UserImportantDataResponse `json:"user_important_data"`
+	ID            uint                        `json:"id"`
+	FirstName     string                      `json:"first_name"`
+	LastName      string                      `json:"last_name"`
+	Email         string                      `json:"email"`
+	PhoneNumber   string                      `json:"phone_number"`
+	ProfilePhoto  string                      `json:"profile_photo"`
+	Address       string                      `json:"address"`
+	UserLeadID    uint                        `json:"user_lead_id"`
+	RoleID        uint                        `json:"role_id"`
+	DivisionID    uint                        `json:"division_id"`
+	Division      DivisionResponse            `json:"division"`
+	Role          RoleResponse                `json:"role"`
+	UserImportant UserImportantDataResponse   `json:"user_important_data"`
+	UserEdu       []UserEducationDataResponse `json:"user_education_data"`
 }
 
 type DivisionResponse struct {
@@ -54,12 +59,21 @@ type UserImportantDataResponse struct {
 	Religion    string `json:"Religion"`
 }
 
+type UserEducationDataResponse struct {
+	ID           uint   `json:"id"`
+	UserID       uint   `json:"user_id"`
+	Name         string `json:"name"`
+	StartYear    string `json:"star_year"`
+	GraduateYear string `json:"graduate_year"`
+}
 type ManagerResponse struct {
 	ID        uint
 	FirstName string
 	LastName  string
 	Division  string
 }
+
+const profile = "https://storage.cloud.google.com/hris_app_bucket/profile-photo/"
 
 func UserCoreToResponse(input users.UserCore) UserResponse {
 	var resultResponse = UserResponse{
@@ -68,12 +82,24 @@ func UserCoreToResponse(input users.UserCore) UserResponse {
 		LastName:      input.LastName,
 		Email:         input.Email,
 		PhoneNumber:   input.PhoneNumber,
+		ProfilePhoto:  profile + input.ProfilePhoto,
 		Address:       input.Address,
+		UserLeadID:    input.UserLeadID,
+		RoleID:        input.RoleID,
+		DivisionID:    input.DivisionID,
 		Division:      DivisionCoreToResponse(input.Division),
 		Role:          RoleCoreToResp(input.Role),
 		UserImportant: UserImportCoreToResponse(input.UserImport),
+		UserEdu:       UserEduCoreToResponse(input.UserEdu),
 	}
 	return resultResponse
+}
+
+type DashboardResponse struct {
+	EmployeeCount   uint `json:"employee_count"`
+	ManagerCount    uint `json:"manager_count"`
+	MaleUserCount   uint `json:"male_user_count"`
+	FemaleUserCount uint `json:"female_user_count"`
 }
 
 func UserCoreToResponseAll(input users.UserCore) UserResponseAll {
@@ -116,6 +142,22 @@ func UserImportCoreToResponse(input users.UserImportantData) UserImportantDataRe
 	return resp
 }
 
+func UserEduCoreToResponse(input []users.UserEducationData) []UserEducationDataResponse {
+	var eduData []UserEducationDataResponse
+
+	for _, val := range input {
+		var EduRes = UserEducationDataResponse{
+			ID:           val.ID,
+			UserID:       val.UserID,
+			Name:         val.Name,
+			StartYear:    val.StartYear,
+			GraduateYear: val.StartYear,
+		}
+		eduData = append(eduData, EduRes)
+	}
+
+	return eduData
+}
 func UserCoreToManagerResponse(input users.UserCore) ManagerResponse {
 	var userMan = ManagerResponse{
 		ID:        input.ID,

@@ -62,6 +62,11 @@ type UserDataInterface interface {
 	Delete(id uint) error
 	Login(email, password string) (UserCore, error)
 	GetAllManager() ([]UserCore, error)
+
+	CountEmployees() (uint, error)
+	CountManagers() (uint, error)
+	CountMaleUsers() (uint, error)
+	CountFemaleUsers() (uint, error)
 }
 
 type UserServiceInterface interface {
@@ -72,4 +77,12 @@ type UserServiceInterface interface {
 	Delete(id uint) error
 	Login(email, password string) (UserCore, string, error)
 	GetAllManager() ([]UserCore, error)
+
+	CountEmployees() (uint, error)
+	CountManagers() (uint, error)
+	CountMaleUsers() (uint, error)
+	CountFemaleUsers() (uint, error)
 }
+
+
+

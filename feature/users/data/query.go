@@ -192,3 +192,43 @@ func (repo *UserQuery) Login(email string, password string) (dataLogin users.Use
 	repo.dataLogin = dataLogin
 	return dataLogin, nil
 }
+
+// CountEmployees menghitung jumlah employee berdasarkan jumlah ID pada tabel User.
+func (repo *UserQuery) CountEmployees() (uint, error) {
+	var employeeCount int64
+	tx := repo.db.Model(&User{}).Count(&employeeCount)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return uint(employeeCount), nil
+}
+
+// CountManagers menghitung jumlah manager berdasarkan jumlah user dengan role_id=2(manager)
+func (repo *UserQuery) CountManagers() (uint, error) {
+	var managerCount int64
+	tx := repo.db.Model(&User{}).Where("role_id = ?", 2).Count(&managerCount)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return uint(managerCount), nil
+}
+
+// CountMaleUsers menghitung jumlah user laki-laki berdasarkan gender=laki-laki.
+func (repo *UserQuery) CountMaleUsers() (uint, error) {
+	var maleUserCount int64
+	tx := repo.db.Model(&User{}).Where("gender = ?", "laki-laki").Count(&maleUserCount)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return uint(maleUserCount), nil
+}
+
+// CountFemaleUsers menghitung jumlah user perempuan berdasarkan gender=perempuan.
+func (repo *UserQuery) CountFemaleUsers() (uint, error) {
+	var femaleUserCount int64 // Use int64 here
+	tx := repo.db.Model(&User{}).Where("gender = ?", "perempuan").Count(&femaleUserCount)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return uint(femaleUserCount), nil
+}

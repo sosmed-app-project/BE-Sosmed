@@ -19,4 +19,3 @@ func DivisionCoreToResponseAll(input divisions.DivisionCore) DivisionsResponseAl
 	}
 	return divResp
 }
-

@@ -188,7 +188,6 @@ func (handler *UserHandler) Login(c echo.Context) error {
 
 		}
 	}
-
 	var response = LoginResponse{
 		ID:       dataLogin.ID,
 		Role:     dataLogin.Role.Name,
@@ -210,4 +209,56 @@ func (handler *UserHandler) GetAllManager(c echo.Context) error {
 		userResp = append(userResp, resp)
 	}
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", userResp))
+}
+
+func (handler *UserHandler) GetEmployeeCount(c echo.Context) error {
+	employeeCount, err := handler.userService.CountEmployees()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting employee count", nil))
+	}
+
+	response := DashboardResponse{
+		EmployeeCount: employeeCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
+
+func (handler *UserHandler) GetManagerCount(c echo.Context) error {
+	managerCount, err := handler.userService.CountManagers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting manager count", nil))
+	}
+
+	response := DashboardResponse{
+		ManagerCount: managerCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
+
+func (handler *UserHandler) GetMaleUserCount(c echo.Context) error {
+	maleUserCount, err := handler.userService.CountMaleUsers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting male user count", nil))
+	}
+
+	response := DashboardResponse{
+		MaleUserCount: maleUserCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+}
+
+func (handler *UserHandler) GetFemaleUserCount(c echo.Context) error {
+	femaleUserCount, err := handler.userService.CountFemaleUsers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting female user count", nil))
+	}
+
+	response := DashboardResponse{
+		FemaleUserCount: femaleUserCount,
+	}
+
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
 }

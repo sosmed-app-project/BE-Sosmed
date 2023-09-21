@@ -74,3 +74,27 @@ func (service *UserService) Login(email string, password string) (dataLogin user
 	}
 	return dataLogin, token, nil
 }
+
+// CountEmployees 
+func (service *UserService) CountEmployees() (uint, error) {
+	count, err := service.userData.CountEmployees()
+	return count, err
+}
+
+// CountManagers 
+func (service *UserService) CountManagers() (uint, error) {
+	count, err := service.userData.CountManagers()
+	return count, err
+}
+
+// CountMaleUsers 
+func (service *UserService) CountMaleUsers() (uint, error) {
+	count, err := service.userData.CountMaleUsers()
+	return count, err
+}
+
+// CountFemaleUsers 
+func (service *UserService) CountFemaleUsers() (uint, error) {
+	count, err := service.userData.CountFemaleUsers()
+	return count, err
+}
