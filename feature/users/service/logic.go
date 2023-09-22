@@ -23,8 +23,8 @@ func (service *UserService) GetAllManager() ([]users.UserCore, error) {
 }
 
 // Add implements users.UserServiceInterface.
-func (service *UserService) Add(input users.UserCore, file multipart.File, header *multipart.FileHeader) error {
-	err := service.userData.Insert(input, file, header)
+func (service *UserService) Add(input users.UserCore, file multipart.File, fileName string) error {
+	err := service.userData.Insert(input, file, fileName)
 	return err
 }
 
@@ -75,25 +75,25 @@ func (service *UserService) Login(email string, password string) (dataLogin user
 	return dataLogin, token, nil
 }
 
-// CountEmployees 
+// CountEmployees
 func (service *UserService) CountEmployees() (uint, error) {
 	count, err := service.userData.CountEmployees()
 	return count, err
 }
 
-// CountManagers 
+// CountManagers
 func (service *UserService) CountManagers() (uint, error) {
 	count, err := service.userData.CountManagers()
 	return count, err
 }
 
-// CountMaleUsers 
+// CountMaleUsers
 func (service *UserService) CountMaleUsers() (uint, error) {
 	count, err := service.userData.CountMaleUsers()
 	return count, err
 }
 
-// CountFemaleUsers 
+// CountFemaleUsers
 func (service *UserService) CountFemaleUsers() (uint, error) {
 	count, err := service.userData.CountFemaleUsers()
 	return count, err

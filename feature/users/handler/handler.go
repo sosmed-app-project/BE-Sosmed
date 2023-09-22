@@ -40,20 +40,28 @@ func (handler *UserHandler) Add(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid"+errBind.Error(), nil))
 	}
 
+	var fileName string
 	file, header, errFile := c.Request().FormFile("profile_photo")
+
 	if errFile != nil {
-		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid"+errBind.Error(), nil))
+		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid "+errFile.Error(), nil))
 	}
+
+	// if fileName == "" {
+	// 	fileName = "default.jpg"
+	// } else {
+	// 	fileName = header.Filename
+	// }
+	fileName = header.Filename
 
 	// errUp := helper.Uploader.UploadFile(file, header.Filename)
 
 	// if errUp != nil {
 	// 	return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
 	// }
-
 	input.Password = "qwerty"
 	var userCore = UserRequestToCore(input)
-	err := handler.userService.Add(userCore, file, header)
+	err := handler.userService.Add(userCore, file, fileName)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
 	}
