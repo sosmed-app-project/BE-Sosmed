@@ -55,7 +55,7 @@ type UserEducationData struct {
 }
 
 type UserDataInterface interface {
-	Insert(input UserCore, file multipart.File, header *multipart.FileHeader) error
+	Insert(input UserCore, file multipart.File, fileName string) error
 	SelectAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, int64, error)
 	SelectById(id uint) (UserCore, error)
 	Update(id uint, input UserCore) error
@@ -70,7 +70,7 @@ type UserDataInterface interface {
 }
 
 type UserServiceInterface interface {
-	Add(input UserCore, file multipart.File, header *multipart.FileHeader) error
+	Add(input UserCore, file multipart.File, fileName string) error
 	GetAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, bool, error)
 	GetById(id uint) (UserCore, error)
 	Update(id uint, input UserCore) error
@@ -83,6 +83,3 @@ type UserServiceInterface interface {
 	CountMaleUsers() (uint, error)
 	CountFemaleUsers() (uint, error)
 }
-
-
-

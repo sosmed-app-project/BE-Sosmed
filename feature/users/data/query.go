@@ -40,7 +40,7 @@ func (repo *UserQuery) GetAllManager() ([]users.UserCore, error) {
 }
 
 // Insert implements users.UserDataInterface.
-func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, header *multipart.FileHeader) error {
+func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, fileName string) error {
 	var userModel = UserCoreToModel(input)
 	var userLead User
 
@@ -62,8 +62,7 @@ func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, header 
 	if errGen != nil {
 		return errGen
 	}
-
-	userModel.ProfilePhoto = nameGen + header.Filename
+	userModel.ProfilePhoto = nameGen + fileName
 
 	tx := repo.db.Create(&userModel)
 	if tx.Error != nil {
