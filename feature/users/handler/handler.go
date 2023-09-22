@@ -44,15 +44,15 @@ func (handler *UserHandler) Add(c echo.Context) error {
 	file, header, errFile := c.Request().FormFile("profile_photo")
 
 	if errFile != nil {
+		if strings.Contains(errFile.Error(), "no such file") {
+			fileName = "default.jpg"
+		}
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid "+errFile.Error(), nil))
 	}
 
-	// if fileName == "" {
-	// 	fileName = "default.jpg"
-	// } else {
-	// 	fileName = header.Filename
-	// }
-	fileName = header.Filename
+	if fileName == "" {
+		fileName = strings.ReplaceAll(header.Filename, " ", "_")
+	}
 
 	// errUp := helper.Uploader.UploadFile(file, header.Filename)
 

@@ -58,11 +58,20 @@ func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, fileNam
 		userModel.DivisionID = userLead.DivisionID
 	}
 
-	nameGen, errGen := helper.GenerateName()
-	if errGen != nil {
-		return errGen
+	if fileName == "default.jpg" {
+		userModel.ProfilePhoto = fileName
+	} else {
+		nameGen, errGen := helper.GenerateName()
+		if errGen != nil {
+			return errGen
+		}
+		userModel.ProfilePhoto = nameGen + fileName
+		errUp := helper.Uploader.UploadFile(file, userModel.ProfilePhoto)
+
+		if errUp != nil {
+			return errUp
+		}
 	}
-	userModel.ProfilePhoto = nameGen + fileName
 
 	tx := repo.db.Create(&userModel)
 	if tx.Error != nil {
@@ -71,11 +80,7 @@ func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, fileNam
 	if tx.RowsAffected == 0 {
 		return errors.New("no row affected")
 	}
-	errUp := helper.Uploader.UploadFile(file, userModel.ProfilePhoto)
 
-	if errUp != nil {
-		return errUp
-	}
 	return nil
 }
 
