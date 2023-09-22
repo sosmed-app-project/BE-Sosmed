@@ -57,6 +57,7 @@ func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, fileNam
 		repo.db.Where("id = ?", userModel.UserLeadID).First(&userLead)
 		userModel.DivisionID = userLead.DivisionID
 	}
+
 	if fileName == "default.jpg" {
 		userModel.ProfilePhoto = fileName
 	} else {
