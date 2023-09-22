@@ -224,28 +224,37 @@ func (repo *UserQuery) Login(email string, password string) (dataLogin users.Use
 // CountEmployees menghitung jumlah employee berdasarkan jumlah ID pada tabel User.
 func (repo *UserQuery) GetDashboard() (users.DashboardCore, error) {
 	var employeeCount, managerCount, maleUsers, femaleUsers int64
+	var male, female []User
 	tx1 := repo.db.Model(&User{}).Where("role_id = 4").Count(&employeeCount)
 	if tx1.Error != nil {
 		return users.DashboardCore{}, tx1.Error
 	}
+
 	tx2 := repo.db.Model(&User{}).Where("role_id = 3").Count(&managerCount)
 	if tx2.Error != nil {
 		return users.DashboardCore{}, tx2.Error
 	}
-	tx3 := repo.db.Model(&User{}).Preload("UserImport", "gender = Male").Count(&maleUsers)
+
+	tx3 := repo.db.Model(&User{}).Preload("UserImport", "gender = ?", "Male").Find(&male)
 	if tx3.Error != nil {
 		return users.DashboardCore{}, tx3.Error
 	}
-	tx4 := repo.db.Model(&User{}).Preload("UserImport", "gender = Female").Count(&femaleUsers)
+	maleUsers = tx3.RowsAffected
+
+	tx4 := repo.db.Model(&User{}).Preload("UserImport", "gender = ?", "Female").Find(&female)
 	if tx4.Error != nil {
 		return users.DashboardCore{}, tx4.Error
 	}
-
+	femaleUsers = tx4.RowsAffected
 	var dashCore = users.DashboardCore{
 		EmployeeCount:   uint(employeeCount),
 		ManagerCount:    uint(managerCount),
 		MaleUserCount:   uint(maleUsers),
 		FemaleUserCount: uint(femaleUsers),
+	}
+
+	for _, v := range male {
+		fmt.Println(v.FirstName, v.UserImport.Gender)
 	}
 
 	return dashCore, nil
