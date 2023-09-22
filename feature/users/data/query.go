@@ -58,7 +58,7 @@ func (repo *UserQuery) Insert(input users.UserCore, file multipart.File, fileNam
 		userModel.DivisionID = userLead.DivisionID
 	}
 
-	if fileName == "default.jpg" {
+	if fileName == "default.png" {
 		userModel.ProfilePhoto = fileName
 	} else {
 		nameGen, errGen := helper.GenerateName()
