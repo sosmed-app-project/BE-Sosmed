@@ -167,3 +167,13 @@ func UserCoreToManagerResponse(input users.UserCore) ManagerResponse {
 	}
 	return userMan
 }
+
+func DashboardCoreToResponse(input users.DashboardCore) DashboardResponse {
+	var dashResp = DashboardResponse{
+		EmployeeCount:   input.EmployeeCount,
+		ManagerCount:    input.ManagerCount,
+		MaleUserCount:   input.MaleUserCount,
+		FemaleUserCount: input.FemaleUserCount,
+	}
+	return dashResp
+}

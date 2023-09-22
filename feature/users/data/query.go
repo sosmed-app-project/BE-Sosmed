@@ -163,10 +163,34 @@ func (repo *UserQuery) SelectAll(role_id uint, division_id, page, item uint, sea
 }
 
 // Update implements users.UserDataInterface.
-func (repo *UserQuery) Update(id uint, input users.UserCore) error {
+func (repo *UserQuery) Update(id uint, input users.UserCore, file multipart.File, fileName string) error {
 	var userModel = UserCoreToModel(input)
-	fmt.Println(userModel.UserImport.EmergencyName)
-	fmt.Println(userModel.UserEdu[0].Name)
+	var userLead User
+
+	repo.db.Where("id = ?", userModel.UserLeadID).First(&userLead)
+	userModel.DivisionID = userLead.DivisionID
+
+	hass, errHass := helper.HassPassword(userModel.Password)
+	if errHass != nil {
+		return errHass
+	}
+	userModel.Password = hass
+
+	if fileName == "default.jpg" {
+		userModel.ProfilePhoto = fileName
+	} else {
+		nameGen, errGen := helper.GenerateName()
+		if errGen != nil {
+			return errGen
+		}
+		userModel.ProfilePhoto = nameGen + fileName
+		errUp := helper.Uploader.UploadFile(file, userModel.ProfilePhoto)
+
+		if errUp != nil {
+			return errUp
+		}
+	}
+
 	tx := repo.db.Session(&gorm.Session{FullSaveAssociations: true}).Model(&User{}).Where("id = ?", id).Updates(&userModel)
 	if tx.Error != nil {
 		return tx.Error
@@ -198,41 +222,40 @@ func (repo *UserQuery) Login(email string, password string) (dataLogin users.Use
 }
 
 // CountEmployees menghitung jumlah employee berdasarkan jumlah ID pada tabel User.
-func (repo *UserQuery) CountEmployees() (uint, error) {
-	var employeeCount int64
-	tx := repo.db.Model(&User{}).Count(&employeeCount)
-	if tx.Error != nil {
-		return 0, tx.Error
+func (repo *UserQuery) GetDashboard() (users.DashboardCore, error) {
+	var employeeCount, managerCount, maleUsers, femaleUsers int64
+	var male, female []User
+	tx1 := repo.db.Model(&User{}).Where("role_id = 4").Count(&employeeCount)
+	if tx1.Error != nil {
+		return users.DashboardCore{}, tx1.Error
 	}
-	return uint(employeeCount), nil
-}
 
-// CountManagers menghitung jumlah manager berdasarkan jumlah user dengan role_id=2(manager)
-func (repo *UserQuery) CountManagers() (uint, error) {
-	var managerCount int64
-	tx := repo.db.Model(&User{}).Where("role_id = ?", 2).Count(&managerCount)
-	if tx.Error != nil {
-		return 0, tx.Error
+	tx2 := repo.db.Model(&User{}).Where("role_id = 3").Count(&managerCount)
+	if tx2.Error != nil {
+		return users.DashboardCore{}, tx2.Error
 	}
-	return uint(managerCount), nil
-}
 
-// CountMaleUsers menghitung jumlah user laki-laki berdasarkan gender=laki-laki.
-func (repo *UserQuery) CountMaleUsers() (uint, error) {
-	var maleUserCount int64
-	tx := repo.db.Model(&User{}).Where("gender = ?", "laki-laki").Count(&maleUserCount)
-	if tx.Error != nil {
-		return 0, tx.Error
+	tx3 := repo.db.Model(&User{}).Preload("UserImport", "gender = ?", "Male").Find(&male)
+	if tx3.Error != nil {
+		return users.DashboardCore{}, tx3.Error
 	}
-	return uint(maleUserCount), nil
-}
+	maleUsers = tx3.RowsAffected
 
-// CountFemaleUsers menghitung jumlah user perempuan berdasarkan gender=perempuan.
-func (repo *UserQuery) CountFemaleUsers() (uint, error) {
-	var femaleUserCount int64 // Use int64 here
-	tx := repo.db.Model(&User{}).Where("gender = ?", "perempuan").Count(&femaleUserCount)
-	if tx.Error != nil {
-		return 0, tx.Error
+	tx4 := repo.db.Model(&User{}).Preload("UserImport", "gender = ?", "Female").Find(&female)
+	if tx4.Error != nil {
+		return users.DashboardCore{}, tx4.Error
 	}
-	return uint(femaleUserCount), nil
+	femaleUsers = tx4.RowsAffected
+	var dashCore = users.DashboardCore{
+		EmployeeCount:   uint(employeeCount),
+		ManagerCount:    uint(managerCount),
+		MaleUserCount:   uint(maleUsers),
+		FemaleUserCount: uint(femaleUsers),
+	}
+
+	for _, v := range male {
+		fmt.Println(v.FirstName, v.UserImport.Gender)
+	}
+
+	return dashCore, nil
 }

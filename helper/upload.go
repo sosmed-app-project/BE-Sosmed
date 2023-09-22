@@ -48,11 +48,7 @@ func (c *ClientUploader) UploadFile(file multipart.File, object string) error {
 	defer cancel()
 
 	// Upload an object with storage.Writer.
-	name, errGen := GenerateName()
-	if errGen != nil {
-		return errGen
-	}
-	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + name + object).NewWriter(ctx)
+	wc := c.cl.Bucket(c.bucketName).Object(c.uploadPath + object).NewWriter(ctx)
 	fmt.Println(wc)
 	if _, err := io.Copy(wc, file); err != nil {
 		return fmt.Errorf("io.Copy: %v", err)
