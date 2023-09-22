@@ -54,32 +54,33 @@ type UserEducationData struct {
 	UpdatedAt    time.Time
 }
 
+type DashboardCore struct {
+	EmployeeCount   uint
+	ManagerCount    uint
+	MaleUserCount   uint
+	FemaleUserCount uint
+}
+
 type UserDataInterface interface {
 	Insert(input UserCore, file multipart.File, fileName string) error
 	SelectAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, int64, error)
 	SelectById(id uint) (UserCore, error)
-	Update(id uint, input UserCore) error
+	Update(id uint, input UserCore, file multipart.File, fileName string) error
 	Delete(id uint) error
 	Login(email, password string) (UserCore, error)
 	GetAllManager() ([]UserCore, error)
 
-	CountEmployees() (uint, error)
-	CountManagers() (uint, error)
-	CountMaleUsers() (uint, error)
-	CountFemaleUsers() (uint, error)
+	GetDashboard() (DashboardCore, error)
 }
 
 type UserServiceInterface interface {
 	Add(input UserCore, file multipart.File, fileName string) error
 	GetAll(role_id, division_id, page, item uint, search_name string) ([]UserCore, bool, error)
 	GetById(id uint) (UserCore, error)
-	Update(id uint, input UserCore) error
+	Update(id uint, input UserCore, file multipart.File, fileName string) error
 	Delete(id uint) error
 	Login(email, password string) (UserCore, string, error)
 	GetAllManager() ([]UserCore, error)
 
-	CountEmployees() (uint, error)
-	CountManagers() (uint, error)
-	CountMaleUsers() (uint, error)
-	CountFemaleUsers() (uint, error)
+	GetDashboard() (DashboardCore, error)
 }

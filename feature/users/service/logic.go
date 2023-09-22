@@ -48,8 +48,8 @@ func (service *UserService) GetAll(role_id, division_id, page, item uint, search
 }
 
 // Update implements users.UserServiceInterface.
-func (service *UserService) Update(id uint, input users.UserCore) error {
-	err := service.userData.Update(id, input)
+func (service *UserService) Update(id uint, input users.UserCore, file multipart.File, fileName string) error {
+	err := service.userData.Update(id, input, file, fileName)
 	return err
 }
 
@@ -75,26 +75,8 @@ func (service *UserService) Login(email string, password string) (dataLogin user
 	return dataLogin, token, nil
 }
 
-// CountEmployees
-func (service *UserService) CountEmployees() (uint, error) {
-	count, err := service.userData.CountEmployees()
-	return count, err
-}
-
-// CountManagers
-func (service *UserService) CountManagers() (uint, error) {
-	count, err := service.userData.CountManagers()
-	return count, err
-}
-
-// CountMaleUsers
-func (service *UserService) CountMaleUsers() (uint, error) {
-	count, err := service.userData.CountMaleUsers()
-	return count, err
-}
-
-// CountFemaleUsers
-func (service *UserService) CountFemaleUsers() (uint, error) {
-	count, err := service.userData.CountFemaleUsers()
-	return count, err
+// GetDashboard
+func (service *UserService) GetDashboard() (users.DashboardCore, error) {
+	result, err := service.userData.GetDashboard()
+	return result, err
 }

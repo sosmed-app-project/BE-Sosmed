@@ -45,9 +45,10 @@ func (handler *UserHandler) Add(c echo.Context) error {
 
 	if errFile != nil {
 		if strings.Contains(errFile.Error(), "no such file") {
-			fileName = "default.jpg"
+			fileName = "default.png"
+		} else {
+			return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid "+errFile.Error(), nil))
 		}
-		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid "+errFile.Error(), nil))
 	}
 
 	if fileName == "" {
@@ -118,7 +119,22 @@ func (handler *UserHandler) Update(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid", nil))
 	}
 	var userCore = UserRequestToCore(input)
-	err := handler.userService.Update(uint(idConv), userCore)
+
+	var fileName string
+	file, header, errFile := c.Request().FormFile("profil_photo")
+
+	if errFile != nil {
+		if strings.Contains(errFile.Error(), "no such file") {
+			fileName = "default.jpg"
+		}
+		return c.JSON(http.StatusBadRequest, helper.WebResponse(http.StatusBadRequest, "operation failed, request resource not valid "+errFile.Error(), nil))
+	}
+
+	if fileName == "" {
+		fileName = strings.ReplaceAll(header.Filename, " ", "_")
+	}
+
+	err := handler.userService.Update(uint(idConv), userCore, file, fileName)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "operation failed, internal server error", nil))
 	}
@@ -219,54 +235,14 @@ func (handler *UserHandler) GetAllManager(c echo.Context) error {
 	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", userResp))
 }
 
-func (handler *UserHandler) GetEmployeeCount(c echo.Context) error {
-	employeeCount, err := handler.userService.CountEmployees()
+func (handler *UserHandler) Dashboard(c echo.Context) error {
+	var dashCore users.DashboardCore
+	dashCore, err := handler.userService.GetDashboard()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting employee count", nil))
 	}
 
-	response := DashboardResponse{
-		EmployeeCount: employeeCount,
-	}
+	var dashResp = DashboardCoreToResponse(dashCore)
 
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
-}
-
-func (handler *UserHandler) GetManagerCount(c echo.Context) error {
-	managerCount, err := handler.userService.CountManagers()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting manager count", nil))
-	}
-
-	response := DashboardResponse{
-		ManagerCount: managerCount,
-	}
-
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
-}
-
-func (handler *UserHandler) GetMaleUserCount(c echo.Context) error {
-	maleUserCount, err := handler.userService.CountMaleUsers()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting male user count", nil))
-	}
-
-	response := DashboardResponse{
-		MaleUserCount: maleUserCount,
-	}
-
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
-}
-
-func (handler *UserHandler) GetFemaleUserCount(c echo.Context) error {
-	femaleUserCount, err := handler.userService.CountFemaleUsers()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helper.WebResponse(http.StatusInternalServerError, "error getting female user count", nil))
-	}
-
-	response := DashboardResponse{
-		FemaleUserCount: femaleUserCount,
-	}
-
-	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", response))
+	return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "success", dashResp))
 }

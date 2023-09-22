@@ -32,6 +32,10 @@ func InitRouter(db *gorm.DB, c *echo.Echo) {
 	RoleService := _roleService.NewRoleService(RoleData)
 	RoleHandlerAPI := _roleHandler.NewRoleHandler(RoleService)
 
+	c.GET("/test", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, helper.WebResponse(http.StatusOK, "get test success", nil))
+	})
+
 	c.POST("/login", UserHandlerAPI.Login)
 
 	c.POST("/users", UserHandlerAPI.Add, middlewares.JWTMiddleware())
@@ -42,28 +46,14 @@ func InitRouter(db *gorm.DB, c *echo.Echo) {
 
 	c.GET("/managers", UserHandlerAPI.GetAllManager, middlewares.JWTMiddleware())
 
-	// c.POST("/upload", handler.Upload)
-
 	c.GET("/roles", RoleHandlerAPI.GetAllRoles)
 
 	c.GET("/divisions", DivisionHandlerAPI.GetAllDivisions)
 
-	c.POST("/upload", func(c echo.Context) error {
+	c.GET("/dashboard/", UserHandlerAPI.Dashboard, middlewares.JWTMiddleware())
 
-		file, header, err := c.Request().FormFile("file")
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, "error bind data")
-		}
-		// fmt.Println("nama: ", header.Filename)
-		errUp := helper.Uploader.UploadFile(file, header.Filename)
-		if errUp != nil {
-			return c.JSON(http.StatusInternalServerError, "error upload "+errUp.Error())
-		}
-		return c.JSON(http.StatusOK, "success")
-	})
-	c.GET("/dashboard/jumlahemployee", UserHandlerAPI.GetEmployeeCount, middlewares.JWTMiddleware())
-	c.GET("/dashboard/jumlahmanager", UserHandlerAPI.GetManagerCount, middlewares.JWTMiddleware())
-	c.GET("/dashboard/jumlahmale_users", UserHandlerAPI.GetMaleUserCount, middlewares.JWTMiddleware())
-	c.GET("/dashboard/jumlahfemale_users", UserHandlerAPI.GetFemaleUserCount, middlewares.JWTMiddleware())
+	// c.GET("/dashboard/jumlahmanager", UserHandlerAPI.GetManagerCount, middlewares.JWTMiddleware())
+	// c.GET("/dashboard/jumlahmale_users", UserHandlerAPI.GetMaleUserCount, middlewares.JWTMiddleware())
+	// c.GET("/dashboard/jumlahfemale_users", UserHandlerAPI.GetFemaleUserCount, middlewares.JWTMiddleware())
 
 }
