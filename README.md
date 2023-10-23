@@ -25,7 +25,7 @@ git clone https://github.com/HRIS-APP-TEAM-3/Backend_Golang_immersive.git
 cd Backend_Golang_immersive
 ```
 
-3. Jalankan perintah berikut
+3. Run the following command
 - Enter the package name you want to <b>package-name</b>
 ```
 go mod init package-name
