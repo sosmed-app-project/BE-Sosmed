@@ -1,26 +1,35 @@
 openapi: 3.0.0
-servers:
-  # Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/ILHAM9D27_1/HRIS-APP-Team-2/1.0.0
 info:
-  description: This is a simple API
+  description: Ini merupakan OPEN API Social Media App
   version: "1.0.0"
-  title: Simple HRIS API
+  title: Social Media App
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: juliussiregar1011@gmail.com
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/JULIUSSIREGAR1011/Social-Media/1.0.0
+  - description: Social Media App Server
+    url: https://social-media-app-api.example.com/v1
 tags:
-  - name: Auth
-  - name: Users
-  - name: Roles
-  - name: Divisions
-
+  - name: auth
+    description: Fitur Autentikasi
+  - name: users
+    description: Fitur CRUD users
+  - name: posting
+    description: Fitur CRUD posting
+  - name: comment
+    description: Fitur CRUD comment
+  - name: like
+    description: Fitur Like
 paths:
   /login:
     post:
       tags:
-        - Auth
+        - auth
       summary: authentication
       description: authentication using email and password
       requestBody:
@@ -30,12 +39,12 @@ paths:
             schema:
               type: object
               properties:
-                "email":
+                email:
                   type: string
-                  example: tony@mail.com
-                "password":
+                  example: julius@gmail.com
+                password:
                   type: string
-                  example: qwerty
+                  example: 12345
       responses:
         "200":
           description: success
@@ -44,32 +53,35 @@ paths:
               schema:
                 type: object
                 properties:
-                  "code":
+                  code:
                     type: integer
                     format: int64
                     example: 200
-                  "message":
+                  message:
                     type: string
                     example: success
-                  "data":
+                  data:
                     type: object
-                    example:
-                      role: Admin
-                      division: Human Resource
-                      token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTM4ODY3MzUsInVzZXJJZCI6Im9SNGJteDlSSHVqbmhjQXJRTGhxIn0.R2p7Vils0rZZbS-9gEbayncyxvUEATnav0i6vPRCIz0
+                    properties:
+                      username:
+                        type: string
+                        example: juliussiregar
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdXRob3JpemVkIjp0cnVlLCJleHAiOjE2OTM4ODY3MzUsInVzZXJJZCI6Im9SNGJteDlSSHUzUjhhIn0.R2p7Vils0rZZbS-9gEbayncyxvUEATnav0i6vPRCIz0
         "400":
           $ref: "#/components/responses/responseBadRequest"
         "404":
           $ref: "#/components/responses/responseNotFound"
         "500":
           $ref: "#/components/responses/responseInternalError"
-            
-  /users:
+
+  /register:
     post:
       tags:
-        - Users
+        - users
       summary: add new user
-      description: this endpoint to add new user by sending all information require
+      description: this endpoint to add new user by sending all information required
       requestBody:
         required: true
         content:
@@ -77,87 +89,22 @@ paths:
             schema:
               type: object
               properties:
-                "first_name":
+                username:
                   type: string
-                  example: tony
-                "last_name":
+                  example: juliussiregar
+                tanggal_lahir:
                   type: string
-                  example: stark
-                "email":
+                  format: date
+                  example: 1997-11-10
+                email:
                   type: string
-                  example: tony@mail.com
-                "phone_number":
+                  example: julius@gmail.com
+                no_handphone:
                   type: string
-                  example: 90264
-                "address":
+                  example: 081234567
+                password:
                   type: string
-                  example: Malibu, California
-                "profile_photo":
-                  type: string
-                  example: myProfile.jpg
-                "user_lead_id":
-                  type: string
-                  example: qwRDbka785jaaIUH712u
-                "role_id":
-                  type: string
-                  example: kagiqUF674KJBKaguaI4
-                "division_id":
-                  type: string
-                  example: KUAISbkvashdu65kjsb8
-                "user_important_data":
-                  type: object
-                  properties:
-                    "birth_place":
-                      type: string
-                      example: Manhattan, New York
-                    "birth_day":
-                      type: string
-                      format: date
-                      example: 1970-05-29
-                    "emergency_name":
-                      type: string
-                      example: pepper potts
-                    "emergency_status":
-                      type: string
-                      example: wife
-                    "emergency_phone":
-                      type: string
-                      example: 098765
-                    "npwp":
-                      type: string
-                      example: KGJG7875765HJ
-                    "bpjs":
-                      type: string
-                      example: KAGK76657POIU
-                    "religion":
-                      type: string
-                      enum: 
-                        - Islam
-                        - Kristen
-                        - Katolik
-                        - Hindu
-                        - Budha
-                        - Konghucu
-                      example: Kristen
-                    "gender":
-                      type: string
-                      enum:
-                        - Male
-                        - Female
-                      example: Male
-                "user_education_data":
-                  type: array
-                  items:
-                    properties:
-                      "name":
-                        type: string
-                        example: "Electrical Engineering MIT"
-                      "start_year":
-                        type: string
-                        example: 1984
-                      "graduate_year":
-                        type: string
-                        example: 1987
+                  example: 12345
       responses:
         "201":
           $ref: "#/components/responses/responseCreated"
@@ -166,69 +113,10 @@ paths:
         "500":
           $ref: "#/components/responses/responseInternalError"
 
-    get:
-      tags:
-        - Users
-      summary: get all users
-      description: get all users data
-      responses:
-        "200":
-          description: success
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  "code":
-                    type: integer
-                    format: int64
-                    example: 200
-                  "message":
-                    type: string
-                    example: operatin success
-                  "data":
-                    type: array
-                    items:
-                      properties:
-                        "id":
-                          type: string
-                          example: qwRDbka785jaaIUH712u
-                        "first_name":
-                          type: string
-                          example: tony
-                        "last_name":
-                          type: string
-                          example: stark
-                        "division":
-                          type: object
-                          properties:
-                            "id":
-                              type: string
-                              example: qwRDbka785jaaIUH712u
-                            "name":
-                              type: string
-                              example: Information Technology
-                        "role":
-                          type: object
-                          properties:
-                            "id":
-                              type: string
-                              example: qwRDbka785jaaIUH712u
-                            "name":
-                              type: string
-                              example: Employee
-        
-        "400":
-          $ref: "#/components/responses/responseBadRequest"
-        "404":
-          $ref: "#/components/responses/responseNotFound"
-        "500":
-          $ref: "#/components/responses/responseInternalError"
-
   /users/{user_id}:
     get:
       tags:
-        - Users
+        - users
       summary: get specific user data
       description: get specific user data using user id
       parameters:
@@ -238,27 +126,6 @@ paths:
           in: path
           schema:
             type: number
-<<<<<<< HEAD
-=======
-        - name: page
-          description: "curren page"
-          required: false
-          in: query
-          schema:
-            type: number
-        - name: itemsPerPage
-          description: "count of items every page"
-          required: false
-          in: query
-          schema:
-            type: number
-        - name: searchName
-          description: "searching for user name"
-          required: false
-          in: query
-          schema:
-            type: number
->>>>>>> 733eb7e6fd897a6985a8ae68cc6ff0cd9faffb05
       responses:
         "200":
           description: success
@@ -267,54 +134,22 @@ paths:
               schema:
                 type: object
                 properties:
-                  "first_name":
+                  username:
                     type: string
-                    example: tony
-                  "last_name":
+                    example: juliussiregar
+                  tanggal_lahir:
                     type: string
-                    example: stark
-                  "email":
+                    format: date
+                    example: 1997-11-10
+                  email:
                     type: string
-                    example: tony@mail.com
-                  "phone_number":
+                    example: julius@gmail.com
+                  no_handphone:
                     type: string
-                    example: 90265
-                  "address":
+                    example: 081234567
+                  password:
                     type: string
-                    example: Malibu, California
-                  "division":
-                    type: object
-                    properties:
-                      "id":
-                        type: string
-                        example: qwRDbka785jaaIUH712u
-                      "name":
-                        type: string
-                        example: Information Technology
-                  "role":
-                    type: object
-                    properties:
-                      "id":
-                        type: string
-                        example: qwRDbka785jaaIUH712u
-                      "name":
-                        type: string
-                        example: Employee
-                  "user_important_data":
-                    type: object
-                    properties:
-                      "birth_place":
-                        type: string
-                        example: Manhattan, New York
-                      "birth_date":
-                        type: string
-                        example: 1970-05-29
-                      "religion":
-                        type: string
-                        example: Kristen
-                      "gender":
-                        type: string
-                        example: Male
+                    example: 12345
         "400":
           $ref: "#/components/responses/responseBadRequest"
         "404":
@@ -324,9 +159,9 @@ paths:
 
     put:
       tags:
-        - Users
-      summary: add new user
-      description: this endpoint to add new user by sending all information require
+        - users
+      summary: Update user
+      description: Endpoint ini digunakan untuk memperbarui data pengguna dengan ID 1
       parameters:
         - name: user_id
           description: "identifier user"
@@ -341,87 +176,22 @@ paths:
             schema:
               type: object
               properties:
-                "first_name":
+                username:
                   type: string
-                  example: tony
-                "last_name":
+                  example: juliusaja
+                tanggal_lahir:
                   type: string
-                  example: stark
-                "email":
+                  format: date
+                  example: 1997-11-10
+                email:
                   type: string
-                  example: tony@mail.com
-                "phone_number":
+                  example: julius@gmail.com
+                no_handphone:
                   type: string
-                  example: 90264
-                "address":
+                  example: 081234567
+                password:
                   type: string
-                  example: Malibu, California
-                "profile_photo":
-                  type: string
-                  example: myProfile.jpg
-                "user_lead_id":
-                  type: string
-                  example: qwRDbka785jaaIUH712u
-                "role_id":
-                  type: string
-                  example: kagiqUF674KJBKaguaI4
-                "division_id":
-                  type: string
-                  example: KUAISbkvashdu65kjsb8
-                "user_important_data":
-                  type: object
-                  properties:
-                    "birth_place":
-                      type: string
-                      example: Manhattan, New York
-                    "birth_day":
-                      type: string
-                      format: date
-                      example: 1970-05-29
-                    "emergency_name":
-                      type: string
-                      example: pepper potts
-                    "emergency_status":
-                      type: string
-                      example: wife
-                    "emergency_phone":
-                      type: string
-                      example: 098765
-                    "npwp":
-                      type: string
-                      example: KGJG7875765HJ
-                    "bpjs":
-                      type: string
-                      example: KAGK76657POIU
-                    "religion":
-                      type: string
-                      enum: 
-                        - Islam
-                        - Kristen
-                        - Katolik
-                        - Hindu
-                        - Budha
-                        - Konghucu
-                      example: Kristen
-                    "gender":
-                      type: string
-                      enum:
-                        - Male
-                        - Female
-                      example: Male
-                "user_education_data":
-                  type: array
-                  items:
-                    properties:
-                      "name":
-                        type: string
-                        example: "Electrical Engineering MIT"
-                      "start_year":
-                        type: string
-                        example: 1984
-                      "graduate_year":
-                        type: string
-                        example: 1987
+                  example: 54321
       responses:
         "201":
           $ref: "#/components/responses/responseCreated"
@@ -432,7 +202,7 @@ paths:
 
     delete:
       tags:
-        - Users
+        - users
       summary: delete user
       description: this endpoint to delete user by id using param
       parameters:
@@ -451,14 +221,12 @@ paths:
           $ref: "#/components/responses/responseNotFound"
         "500":
           $ref: "#/components/responses/responseInternalError"
-
-
-  /roles:
+  /posting:
     get:
       tags:
-        - Roles
-      summary: get all roles
-      description: this endpoint to get all roles data
+        - posting
+      summary: Get all postings
+      description: Get a list of all postings
       responses:
         "200":
           description: success
@@ -467,42 +235,80 @@ paths:
               schema:
                 type: object
                 properties:
-                  "code":
+                  code:
                     type: integer
                     format: int64
                     example: 200
-                  "message":
+                  message:
                     type: string
-                    example: success
-                  "data":
+                    example: operation success
+                  data:
                     type: array
                     items:
+                      type: object
                       properties:
-                        "id":
+                        posting_id:
                           type: integer
-                          format: int64
-                        "name":
+                          example: 1
+                        user_id:
+                          type: integer
+                          example: 1
+                        caption:
                           type: string
-                    example:
-                      - id: 1
-                        name: Superadmin
-                      - id: 2
-                        name: Admin
-                      - id: 3
-                        name: Manager
-                      - id: 4
-                        name: Employee
+                          example: "Hello World"
+                        photoURL:
+                          type: string
+                          example: "https://gcp.com/hellokamu.jpg"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
         "404":
           $ref: "#/components/responses/responseNotFound"
         "500":
           $ref: "#/components/responses/responseInternalError"
-                  
-  /divisions:
+          
+    post:
+      tags:
+        - posting
+      summary: Add new posting
+      description: Add a new posting by sending all required information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  example: 1
+                caption:
+                  type: string
+                  example: "Hello mas mas"
+                photoURL:
+                  type: string
+                  example: "https://gcp.com/pemandangan.jpg"
+      responses:
+        "201":
+          $ref: "#/components/responses/responseCreated"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+
+  /posting/{posting_id}:
     get:
       tags:
-        - Divisions
-      summary: get all divisions
-      description: this endpoint to get all divisions data
+        - posting
+      summary: Get specific posting data
+      description: Get data of a specific posting by posting ID
+      parameters:
+        - name: posting_id
+          description: "identifier posting"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
       responses:
         "200":
           description: success
@@ -511,130 +317,388 @@ paths:
               schema:
                 type: object
                 properties:
-                  "code":
+                  posting_id:
                     type: integer
-                    format: int64
-                    example: 200
-                  "message":
+                    example: 1
+                  user_id:
+                    type: integer
+                    example: 1
+                  caption:
                     type: string
-                    example: success
-                  "data":
-                    type: array
-                    items:
-                      properties:
-                        "id":
-                          type: integer
-                          format: int64
-                        "name":
-                          type: string
-                    example:
-                      - id: 1
-                        name: General Division
-                      - id: 2
-                        name: Human Resource
-                      - id: 3
-                        name: Information Technology
-                      - id: 4
-                        name: Marketing
+                    example: "Hello World"
+                  photoURL:
+                    type: string
+                    example: Hello.jpg
         "404":
           $ref: "#/components/responses/responseNotFound"
         "500":
           $ref: "#/components/responses/responseInternalError"
-        
+          
+    put:
+        tags:
+          - posting
+        summary: Update posting
+        description: Update data of a specific posting by posting ID
+        parameters:
+          - name: posting_id
+            description: "identifier posting"
+            required: true
+            in: path
+            schema:
+              type: integer
+              example: 1
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  caption:
+                    type: string
+                    example: "Hallo mbak"
+                  photoURL:
+                    type: string
+                    example: "https://gcp.com/hallombak.jpg"
+        responses:
+          "201":
+            $ref: "#/components/responses/responseCreated"
+          "400":
+            $ref: "#/components/responses/responseBadRequest"
+          "404":
+            $ref: "#/components/responses/responseNotFound"
+          "500":
+            $ref: "#/components/responses/responseInternalError"
+    delete:
+      tags:
+        - posting
+      summary: Delete posting
+      description: Delete a posting by posting ID
+      parameters:
+        - name: posting_id
+          description: "identifier posting"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          $ref: "#/components/responses/responseSuccess"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"   
+  /comment:
+    get:
+      tags:
+        - comment
+      summary: Get all comments
+      description: Get a list of all comments
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int64
+                    example: 200
+                  message:
+                    type: string
+                    example: operation success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        comment_id:
+                          type: integer
+                          example: 1
+                        posting_id:
+                          type: integer
+                          example: 1
+                        user_id:
+                          type: integer
+                          example: 1
+                        coaption:
+                          type: string
+                          example: "Mantap bro!"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+          
+    post:
+      tags:
+        - comment
+      summary: Add new comment
+      description: Add a new comment by sending all required information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                posting_id:
+                  type: integer
+                  example: 1
+                user_id:
+                  type: integer
+                  example: 1
+                content:
+                  type: string
+                  example: "Gila lu bro!"
+      responses:
+        "201":
+          $ref: "#/components/responses/responseCreated"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+
+  /comment/{comment_id}:
+    get:
+      tags:
+        - comment
+      summary: Get specific comment data
+      description: Get data of a specific comment by comment ID
+      parameters:
+        - name: comment_id
+          description: "identifier comment"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comment_id:
+                    type: integer
+                    example: 1
+                  posting_id:
+                    type: integer
+                    example: 1
+                  user_id:
+                    type: integer
+                    example: 1
+                  content:
+                    type: string
+                    example: "Mantap bro!"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+    delete:
+      tags:
+        - comment
+      summary: Delete comment
+      description: Delete a comment by comment ID
+      parameters:
+        - name: comment_id
+          description: "identifier comment"
+          required: true
+          in: path
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          $ref: "#/components/responses/responseSuccess"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError" 
+
+  /like:
+    get:
+      tags:
+        - like
+      summary: Get all likes
+      description: Get a list of all likes
+      parameters:
+        - name: user_id
+          description: "Filter likes by user_id"
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+        - name: posting_id
+          description: "Filter likes by posting_id"
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 1
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int64
+                    example: 200
+                  message:
+                    type: string
+                    example: operation success
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        like_id:
+                          type: integer
+                          example: 1
+                        user_id:
+                          type: integer
+                          example: 1
+                        posting_id:
+                          type: integer
+                          example: 1
+                        count_like:
+                          type: boolean
+                          example: true
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "404":
+          $ref: "#/components/responses/responseNotFound"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+            
+    post:
+      tags:
+        - like
+      summary: Add new like
+      description: Add a new like by sending all required information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+                  example: 1
+                posting_id:
+                  type: integer
+                  example: 1
+                count_like:
+                  type: boolean
+                  example: true
+      responses:
+        "201":
+          $ref: "#/components/responses/responseCreated"
+        "400":
+          $ref: "#/components/responses/responseBadRequest"
+        "500":
+          $ref: "#/components/responses/responseInternalError"
+  /like/{like_id}:   
+      delete:
+        tags:
+          - like
+        summary: Delete like
+        description: Delete a like by like ID
+        parameters:
+          - name: like_id
+            description: "identifier like"
+            required: true
+            in: path
+            schema:
+              type: integer
+              example: 1
+        responses:
+          "200":
+            $ref: "#/components/responses/responseSuccess"
+          "404":
+            $ref: "#/components/responses/responseNotFound"
+          "500":
+            $ref: "#/components/responses/responseInternalError"
+
 components:
   responses:
-    #########################
-    ### general responses ###
-    #########################
     responseSuccess:
-      description: success
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              "code":
-                type: integer
-                format: int64
-                example: 200
-              "message":
-                type: string
-                example: success
-              "data":
-                type: object
-                example: null
-<<<<<<< HEAD
-
-=======
->>>>>>> 733eb7e6fd897a6985a8ae68cc6ff0cd9faffb05
+        description: success
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                "code":
+                  type: integer
+                  format: int64
+                  example: 200
+                "message":
+                  type: string
+                  example: success
+                "data":
+                  type: object
+                  example: null
     responseCreated:
-      description: success
+      description: User created successfully
       content:
         application/json:
           schema:
             type: object
             properties:
-              "code":
-                type: integer
-                format: int64
-                example: 201
-              "message":
+              message:
                 type: string
-                example: operation success, data added
-              "data":
-                type: object
-                example: null
-
+                example: User created/updated successfully
     responseBadRequest:
-      description: failed
+      description: Bad Request
       content:
         application/json:
           schema:
             type: object
             properties:
-              "code":
-                type: integer
-                format: int64
-                example: 400
-              "message":
+              message:
                 type: string
-                example: operation failed, request resource not valid
-              "data":
-                type: object
-                example: null
-    
+                example: Bad Request
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    field:
+                      type: string
+                      example: password
+                    message:
+                      type: string
+                      example: Password is required
     responseNotFound:
-      description: failed not found
+      description: Not Found
       content:
         application/json:
           schema:
             type: object
             properties:
-              "code": 
-                type: integer
-                format: int64
-                example: 404
-              "message":
+              message:
                 type: string
-                example: operation failed, resource not found
-              "data":
-                type: object
-                example: null
-    
+                example: Not Found
     responseInternalError:
-      description: failed internal server error
+      description: Internal Server Error
       content:
         application/json:
           schema:
             type: object
             properties:
-              "code":
-                type: integer
-                format: int64
-                example: 500
-              "message":
+              message:
                 type: string
-                example: operatin failed, internal server error
-              "data":
-                type: object
-                example: null
+                example: Internal Server Error
