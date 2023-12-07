@@ -2,16 +2,18 @@ package users
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
-// User model
 type User struct {
-	ID          uint      `json:"id"`
-	Username    string    `json:"username"`
-	DateOfBirth time.Time `json:"date_of_birth"`
-	Email       string    `json:"email"`
-	PhoneNumber string    `json:"phone_number"`
-	Password    string    `json:"password"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID           uint   `gorm:"primaryKey"`
+	Username     string `gorm:"not null"`
+	TanggalLahir string `gorm:"not null"`
+	Email        string `gorm:"not null"`
+	NoHandphone  string `gorm:"not null"`
+	Password     string `gorm:"not null"`
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
+	DeletedAt    gorm.DeletedAt `gorm:"index"`
 }

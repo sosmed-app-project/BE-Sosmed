@@ -1,13 +1,17 @@
 package like
 
-import "time"
+import (
+	"time"
 
-// Like model
+	"gorm.io/gorm"
+)
+
 type Like struct {
-	ID        uint      `json:"id"`
-	UserID    uint      `json:"user_id"`
-	PostID    uint      `json:"post_id"`
-	CountLike bool      `json:"count_like"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        uint `gorm:"primaryKey;autoIncrement"`
+	UserID    uint `gorm:"not null"`
+	PostingID uint `gorm:"not null"`
+	CountLike bool `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
