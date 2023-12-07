@@ -1,13 +1,17 @@
 package comment
 
-import "time"
+import (
+	"time"
 
-// Comment model
+	"gorm.io/gorm"
+)
+
 type Comment struct {
-	ID        uint      `json:"id"`
-	PostID    uint      `json:"post_id"`
-	UserID    uint      `json:"user_id"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        uint   `gorm:"primaryKey;autoIncrement"`
+	PostingID uint   `gorm:"not null"`
+	UserID    uint   `gorm:"not null"`
+	Content   string `gorm:"not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
