@@ -1,7 +1,5 @@
 package handler
 
-package main
-
 import (
 	"net/http"
 
