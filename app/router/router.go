@@ -1,23 +1,29 @@
 package router
 
 import (
-	"app-sosmed/feature/users/handler"
+	"app-sosmed/app/middlewares"
+	_userData "app-sosmed/features/users/data"
+	_userHandler "app-sosmed/features/users/handler"
+	_userService "app-sosmed/features/users/service"
+	"app-sosmed/helpers"
+	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"gorm.io/gorm"
 )
 
-// InitRoute initializes the routes
-func InitRoute(e *echo.Echo, uc *handler.UserHandler) {
-	e.Pre(middleware.RemoveTrailingSlash())
+func InitRouter(db *gorm.DB, c *echo.Echo) {
+	UserData := _userData.NewUsersQuery(db)
+	UserService := _userService.NewUsersLogic(UserData)
+	UserHandlerAPI := _userHandler.NewUsersHandler(UserService)
 
-	e.Use(middleware.CORS())
-	e.Use(middleware.Logger())
+	c.GET("/test", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, helpers.WebResponse(http.StatusOK, "get test success", nil))
+	})
 
-	routeUser(e, uc)
-}
-
-func routeUser(e *echo.Echo, uc *handler.UserHandler) {
-	e.POST("/register", uc.Register)
-	e.POST("/login", uc.Login)
+	c.POST("/login", UserHandlerAPI.Login)
+	c.POST("/register", UserHandlerAPI.CreateUser)
+	c.DELETE("/user/:user_id", UserHandlerAPI.DeleteUser, middlewares.JWTMiddleware())
+	c.GET("/profile", UserHandlerAPI.GetUser, middlewares.JWTMiddleware())
+	c.PUT("/update", UserHandlerAPI.UpdateUser, middlewares.JWTMiddleware())
 }

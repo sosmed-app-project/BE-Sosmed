@@ -1,30 +1,26 @@
-// app/database/database.go
 package database
 
 import (
 	"app-sosmed/app/config"
+	usersData "app-sosmed/features/users/data"
 	"fmt"
 
-	"github.com/labstack/gommon/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-// InitMySQL initializes the MySQL database connection
-func InitMySQL(c config.AppConfig) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		c.DBUSER,
-		c.DBPASS,
-		c.DBHOST,
-		c.DBPORT,
-		c.DBNAME,
-	)
+func InitMysql(cfg *config.AppConfig) *gorm.DB {
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+		cfg.DBUsername, cfg.DBPassword, cfg.DBHost, cfg.DBPort, cfg.DBName)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
-		log.Error("Failed to connect to the database. Error:", err.Error())
-		return nil, err
+		panic(err)
 	}
+	return DB
+}
 
-	return db, nil
+func InittialMigration(db *gorm.DB) {
+
+	db.AutoMigrate(&usersData.User{})
 }

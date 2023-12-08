@@ -1,92 +1,75 @@
-// app/config/config.go
 package config
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strconv"
 
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
-// AppConfig holds the configuration values
+var JWT_SECRET = ""
+
 type AppConfig struct {
-	DBUSER string
-	DBHOST string
-	DBPASS string
-	DBNAME string
-	DBPORT uint16
+	DBUsername string
+	DBPassword string
+	DBHost     string
+	DBPort     int
+	DBName     string
+	jwtKey     string
 }
 
-// InitConfig initializes the application configuration
 func InitConfig() *AppConfig {
-	var response = new(AppConfig)
-	response = readData()
-
-	// Debugging
-	fmt.Printf("Read config: %+v\n", response)
-
-	return response
+	return ReadENV()
 }
 
-func readData() *AppConfig {
-	var data = new(AppConfig)
+func ReadENV() *AppConfig {
+	app := AppConfig{}
+	isRead := true
 
-	data = readEnv()
+	if val, found := os.LookupEnv("JWTSECRET"); found {
+		app.jwtKey = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBUSER"); found {
+		app.DBUsername = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBPASS"); found {
+		app.DBPassword = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBHOST"); found {
+		app.DBHost = val
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBPORT"); found {
+		conv, _ := strconv.Atoi(val)
+		app.DBPort = conv
+		isRead = false
+	}
+	if val, found := os.LookupEnv("DBNAME"); found {
+		app.DBName = val
+		isRead = false
+	}
 
-	if data == nil {
-		err := godotenv.Load(".env")
-		data = readEnv()
-		if err != nil || data == nil {
+	if isRead {
+		viper.AddConfigPath(".")
+		viper.SetConfigName("local")
+		viper.SetConfigType("env")
+
+		err := viper.ReadInConfig()
+		if err != nil {
+			log.Println("error read config: ", err.Error())
 			return nil
 		}
+		app.jwtKey = viper.Get("JWTSECRET").(string)
+		app.DBUsername = viper.Get("DBUSER").(string)
+		app.DBPassword = viper.Get("DBPASS").(string)
+		app.DBHost = viper.Get("DBHOST").(string)
+		app.DBPort, _ = strconv.Atoi(viper.Get("DBPORT").(string))
+		app.DBName = viper.Get("DBNAME").(string)
 	}
-
-	return data
-}
-
-func readEnv() *AppConfig {
-	var data = new(AppConfig)
-	var permit = true
-
-	if val, found := os.LookupEnv("DBUSER"); found {
-		data.DBUSER = val
-	} else {
-		permit = false
-	}
-
-	if val, found := os.LookupEnv("DBPASS"); found {
-		data.DBPASS = val
-	} else {
-		permit = false
-	}
-
-	if val, found := os.LookupEnv("DBHOST"); found {
-		data.DBHOST = val
-	} else {
-		permit = false
-	}
-
-	if val, found := os.LookupEnv("DBPORT"); found {
-		cnv, err := strconv.Atoi(val)
-		if err != nil {
-			permit = false
-		}
-
-		data.DBPORT = uint16(cnv)
-	} else {
-		permit = false
-	}
-
-	if val, found := os.LookupEnv("DBNAME"); found {
-		data.DBNAME = val
-	} else {
-		permit = false
-	}
-
-	if !permit {
-		return nil
-	}
-
-	return data
+	JWT_SECRET = app.jwtKey
+	return &app
 }
