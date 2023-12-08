@@ -1,3 +1,4 @@
+// app/config/config.go
 package config
 
 import (
@@ -8,6 +9,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// AppConfig holds the configuration values
 type AppConfig struct {
 	DBUSER string
 	DBHOST string
@@ -16,6 +18,7 @@ type AppConfig struct {
 	DBPORT uint16
 }
 
+// InitConfig initializes the application configuration
 func InitConfig() *AppConfig {
 	var response = new(AppConfig)
 	response = readData()

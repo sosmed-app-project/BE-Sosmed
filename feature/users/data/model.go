@@ -1,4 +1,5 @@
-package users
+// feature/users/data/model.go
+package data
 
 import (
 	"time"
@@ -6,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// User represents the user model
 type User struct {
 	ID           uint   `gorm:"primaryKey"`
 	Username     string `gorm:"not null"`
