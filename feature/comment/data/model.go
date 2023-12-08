@@ -1,5 +1,3 @@
-// comment/model.go
-
 package data
 
 import "time"

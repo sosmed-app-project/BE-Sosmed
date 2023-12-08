@@ -1,3 +1,4 @@
+// app/database/database.go
 package database
 
 import (
@@ -9,6 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// InitMySQL initializes the MySQL database connection
 func InitMySQL(c config.AppConfig) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		c.DBUSER,
