@@ -1,48 +1,25 @@
-// main.go
 package main
 
 import (
 	"app-sosmed/app/config"
 	"app-sosmed/app/database"
 	"app-sosmed/app/router"
-	"app-sosmed/feature/users/data"
-	"app-sosmed/feature/users/handler"
-	"fmt"
 
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
-	config := config.InitConfig()
-
-	if config == nil {
-		fmt.Println("Failed to read config")
-		return
-	}
-
-	db, err := database.InitMySQL(*config)
-	if err != nil {
-		fmt.Println("Failed to connect to the database. Error:", err)
-		return
-	}
-	defer func(db *gorm.DB) {
-		sqlDB, err := db.DB()
-		if err != nil {
-			fmt.Println("Failed to get SQL DB. Error:", err)
-			return
-		}
-		sqlDB.Close()
-	}(db)
-
-	fmt.Println("Connected to the database successfully!")
+	cfg := config.InitConfig()
+	mysql := database.InitMysql(cfg)
+	database.InittialMigration(mysql)
 
 	e := echo.New()
-
-	userRepository := data.NewUserRepository(db)
-	userHandler := handler.NewUserHandler(userRepository)
-
-	router.InitRoute(e, userHandler)
-
-	e.Start(":8000")
+	e.Pre(middleware.RemoveTrailingSlash())
+	e.Use(middleware.CORS())
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: `[${time_rfc3339}] ${status} ${method} ${host}${path} ${latency_human}` + "\n",
+	}))
+	router.InitRouter(mysql, e)
+	e.Logger.Fatal(e.Start(":8000"))
 }
